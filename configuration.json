@@ -1,11 +1,11 @@
 {
-    "audio_db_location": "/media/mysqlDrive",
+    "audio_db_location": "/home/paul/NetBeansProjects/logFarmDMS",
     "number_of_cameras": "2",
     "camera_resolution": "640,480",
     "cameras": [{
             "number": "0",
             "maximum_db_size": "10",
-            "db_location": "/media/mysqlDrive",
+            "db_location": "/home/paul/NetBeansProjects/logFarmDMS",
             "enabled": "yes",
             "iconify_at_start": "no",
             "hide": "no",
@@ -17,7 +17,7 @@
         }, {
             "number": "1",
             "maximum_db_size": "10",
-            "db_location": "/media/mysqlDrive",
+            "db_location": "/home/paul/NetBeansProjects/logFarmDMS",
             "enabled": "yes",
             "iconify_at_start": "no",
             "hide": "no",
