@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, paulb@logfarm.net
+ * Copyright (c) 2018, tuxjsmith@gmail.com, paulb@logfarm.net
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,6 +40,10 @@ public class OpenConfiguration implements Constants {
     public OpenConfiguration () {
     }
 
+    /**
+     * Read details from the configuration file. If the file does not exist<br>
+     * then create a new one.
+     */
     public static void openConfiguration () {
 
         if (!new File ("configuration.json").exists ()) {
@@ -58,8 +62,12 @@ public class OpenConfiguration implements Constants {
 
             JSONObject jsonObject = new JSONObject (jsonLine_s);
 
+            //<editor-fold defaultstate="collapsed" desc="Global configuration settings">
+            
             /*
-                global settings
+                [TODO] 
+                    Can global_cd be final ?
+                [/TODO]
             */
             CameraDetails global_cd = new CameraDetails ();
             {
@@ -93,13 +101,9 @@ public class OpenConfiguration implements Constants {
                 
                 CAMERAS_DETAILS_HM.put ("global", global_cd);
             }
-            /*
-                end global settings
-            */
+            //</editor-fold>
 
-            /*
-                camera settings
-            */
+            //<editor-fold defaultstate="collapsed" desc="Individual camera settings">
             if (jsonObject.has ("cameras")) {
 
                 JSONArray jsonArray = jsonObject.getJSONArray ("cameras");
@@ -108,6 +112,11 @@ public class OpenConfiguration implements Constants {
 
                     JSONObject cameraObject = jsonArray.getJSONObject (i);
 
+                    /*
+                        [TODO] 
+                            Another final candidate.
+                        [/TODO]
+                    */
                     CameraDetails cd = new CameraDetails ((cameraObject.has ("number")) ? cameraObject.getString ("number") : Integer.toString (CAMERAS_DETAILS_HM.size () - 1),
                                                           (cameraObject.has ("maximum_db_size")) ? cameraObject.getString ("maximum_db_size") : "10",
                                                           (cameraObject.has ("db_location")) ? cameraObject.getString ("db_location") : System.getProperty ("user.dir"),
@@ -123,9 +132,7 @@ public class OpenConfiguration implements Constants {
                     CAMERAS_DETAILS_HM.put (cd.getProperty ("number"), cd);
                 }
             }
-            /*
-                end camera settings
-            */
+            //</editor-fold>
         }
         catch (IOException ex) {
 
@@ -133,6 +140,9 @@ public class OpenConfiguration implements Constants {
         }
     }
 
+    /**
+     * Create a default configuration file.
+     */
     public static void writeDefaultConfiguration () {
 
         final Integer NUMBER_OF_CAMERAS = 2;
@@ -151,6 +161,7 @@ public class OpenConfiguration implements Constants {
                     .key ("number_of_cameras").value (NUMBER_OF_CAMERAS.toString ())
                     .key ("camera_resolution").value ("640,480");
             
+            //<editor-fold defaultstate="collapsed" desc="Create an array of cameras">
             jsonWriter.key ("cameras");
             {
                 jsonWriter.array ();
@@ -166,7 +177,6 @@ public class OpenConfiguration implements Constants {
                                 .key ("hide").value ("no")
                                 .key ("start_recording_at_startup").value ("yes")
                                 .key ("record_video_and_audio_by_default").value ("yes")
-//                                .key ("record_video_only_by_default").value ("no")
                                 .key ("record_audio_only_by_default").value ("no")
                                 .key ("mute_playback_by_default").value ("no")
                                 .key ("screen_location").value (Integer.toString (i*75) + "," + Integer.toString (i*60));
@@ -176,6 +186,7 @@ public class OpenConfiguration implements Constants {
                 }
                 jsonWriter.endArray ();
             }
+            //</editor-fold>
             
             /*
                 close object

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, paulb@logfarm.net
+ * Copyright (c) 2018, tuxjsmith@gmail.com, paulb@logfarm.net
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -67,128 +67,141 @@ import utilities.OpenConfiguration;
 import utilities.PlayAudio;
 
 /**
- *
  * @author tuxjsmith
  */
 public class GUI extends javax.swing.JFrame implements Constants {
 
+    /*
+        [TODO] 
+            Replace variables with a PROPERTIES_HM collection.
+        [/]
+    */
+    
     private final Object FONT = new CvFont ();
-    private final Timer CAPTURE_TIMER = new Timer (), RECORD_AUDIO_TIMER = new Timer (), AUDIO_PLAYBACK_TIMER = new Timer (),
-            HIDE_TIMER = new Timer ();
+    private final Timer CAPTURE_TIMER = new Timer (), 
+                        RECORD_AUDIO_TIMER = new Timer (), 
+                        AUDIO_PLAYBACK_TIMER = new Timer (),
+                        HIDE_TIMER = new Timer ();
     private final BigScreen BIG_SCREEN;
     private final ExportGui EXPORT_GUI;
     /*
-        can playback toggle button's state be used instead of: showPlayBackImages_b
+        Identifies which camera this GUI should operate. The default GUI
+        will operate camera: 0 (zero)
+    */
+    private final Integer CAMERA_NUMBER;
+    
+    /*
+        [TODO] 
+            Can playback toggle button's state be used instead of: showPlayBackImages_b
+        [/]
     */
     private Boolean showPlayBackImages_b = Boolean.FALSE, sliderHasBeenMoved_b = Boolean.FALSE;
+    
     /*
-        if any camera is recording then audio should also be recording
-        testAudioKeepGoing () sets captureAudio_b if there are
+        [TODO] 
+            Move this value to either PROPERTIES_HM or a separate 'status' 
+            class. 
+    
+            Audio is always recoded. Although The user has the option to 
+            record audio, there isn't an option to record video only.
+    
+            The current testAudioKeepGoing is a bit clunky I think;
+            could do better.
+        [/]
+    
+        testAudioKeepGoing () sets captureAudio_b
     */
     private static Boolean captureAudio_b = Boolean.TRUE;
+    
     /*
-        for audio recording
+        For audio recording.
+    
+        [TODO] 
+            Investigate why these finals aren't static and located in 
+            Constants.java ?
+    
+            A separate RecordAudio class would be useful. 
+            We do have a PlayAudio class.
+        [/]
     */
     private final AudioFormat AUDIO_FORMAT = getFormat ();
     private final DataLine.Info CAPTURE_DATA_LINE_INFO = new DataLine.Info (TargetDataLine.class, AUDIO_FORMAT);
     private TargetDataLine line = null;
+    
     /*
-        declared here so that playToggleButton can stop and start it
+        [TODO] 
+    
+            Clarify how many database connections we should expect when
+            the application is running. 
+              
+            - one for the audio
+            - one for all cameras even though we read and right to many
+              tables.
+    
+              Need to remind myself how SQLite works; one connection per
+              table ? Are SQLite databases and tables synonymous ?
+    
+              If only one connection required can we make the connection 
+              declarations final ?
+    
+              INIT_CAMERA_DATABASE () is where we use these declarations and
+              it looks like databases and tables are the same thing from SQLite's
+              point of view.
+    
+              That's cool but I do think database stuff should have a class of
+              it's own.
+        [/]
+    
+        Declared here so that playToggleButton can stop and start it
         used by PlaybackAudioTimerTask
     */
-    private final Integer CAMERA_NUMBER;
     private Connection camera_database_connection; //audio_database_connection;
     private Connection audio_database_connection;
+    
+    /*
+        [TODO] 
+            I think these would better serve inside a 'status' class or
+            PROPERTIES_HM.
+        [/]
+        
+        If either of these are true then the audio database connection is not 
+        closed, if both are false then it is.
+    */
+    private Boolean audioPlayback_b = Boolean.FALSE, 
+                    audioRecord_b = Boolean.FALSE;
+    private Integer audioPlaybackRowId_i = -1;
+    
+    /*
+        [TODO] 
+            These could be candidates for Constants.java.
+        [/]
+    */
     private java.net.URL url = this.getClass ().getResource ("icon_64.png");
     private javax.swing.ImageIcon ii = new javax.swing.ImageIcon (url);
     private java.awt.Image frameIcon = ii.getImage ();
-    /*
-        if either of these are true then the audio database connection is not closed
-        if bother are false then it will
-    */
-    private Boolean audioPlayback_b = Boolean.FALSE, audioRecord_b = Boolean.FALSE; 
-    private Integer audioPlaybackRowId_i = -1;
     
-    public GUI (Integer camNum,
-                Connection audioDbConnection) {
-        
-        initComponents ();
-        
-        CAMERA_NUMBER = camNum;
-        /*
-            camera database
-        */
-        if (CAMERAS_DETAILS_HM.containsKey (CAMERA_NUMBER.toString ())
-            && CAMERAS_DETAILS_HM.get (CAMERA_NUMBER.toString ()).getProperty ("enabled").equals ("yes")) {
-        
-            INIT_CAMERA_DATABASE ();
-        }
-        /*
-            end camera database
-        */
-        
-        /*
-            sub-GUI so use main-gui's audio db connection
-        */
-        audio_database_connection = audioDbConnection;
-        /*
-            end init audio db
-        */
-        
-        setDefaultCloseOperation (DO_NOTHING_ON_CLOSE); 
-        
-        setTitle ("logFarmDMS :: " + CAMERA_NUMBER);
-        
-        setIconImage (frameIcon);
-        
-        /*
-            big screen
-        */
-        BIG_SCREEN = new BigScreen (playToggleButton, audioPlaybackRowId_i);
-        BIG_SCREEN.setTitle ("logFarm DMS :: " + CAMERA_NUMBER + " :: live"); 
-        /*
-            set the initial location of bigScreen
-        */
-        BIG_SCREEN.setLocation (getX () + (getWidth()/2), 
-                                getY () + (getHeight ()/2));
-        /*
-            end big screen
-        */
-        
-        /*
-            export gui
-        */
-        EXPORT_GUI = new ExportGui (recordToggleButton,
-                                    statusBarLabel,
-                                    camera_database_connection,
-                                    audio_database_connection,
-                                    CAMERA_NUMBER);
-        
-        EXPORT_GUI.setLocation (getX () + (getWidth()/2), 
-                                getY () + (getHeight ()/2));
-        /*
-            end export gui
-        */
-
-        /*
-            set sub-gui configuration values
-        */
-        setCameraConfigs ();
-    }
-    
+    /**
+     * Default GUI constructor.
+     * 
+     * [TODO] 
+     *      Documentation.
+     *      Unit test.
+     * [/]
+     */
     public GUI () {
         
         initComponents ();
         
         /*
-            only main-gui
+            Get configuration details from the configuration file (JSON).
+        
+            Only main-gui because there's only one configuration file.
         */
         OpenConfiguration.openConfiguration ();
         
+        //<editor-fold defaultstate="collapsed" desc="Record-audio initialisation.">
         /*
-            only main-gui
-        
-            record audio initialisation
+            Only main-gui because we only record from a single microphone.
         */
         try {
             
@@ -202,46 +215,40 @@ public class GUI extends javax.swing.JFrame implements Constants {
          
             System.err.println ("GUI " + ex.getMessage ());
         }
-        
-        /*
-            end record audio init
-        */
+        //</editor-fold>
         
         CAMERA_NUMBER = 0;
         
+        //<editor-fold defaultstate="collapsed" desc="Camera collection.">
         /*
-            camera database
+            Populated by: OpenConfiguration.openConfiguration
         */
         if (CAMERAS_DETAILS_HM.containsKey (CAMERA_NUMBER.toString ())
             && CAMERAS_DETAILS_HM.get (CAMERA_NUMBER.toString ()).getProperty ("enabled").equals ("yes")) {
         
             INIT_CAMERA_DATABASE ();
         }
-        /*
-            end camera database
-        */
+        //</editor-fold>
         
+        //<editor-fold defaultstate="collapsed" desc="Audio database initialisation.">
         /*
-            other clients use the same audio database connection to play back audio 
-            we pass this connection to those other clients
+            Other clients use the same audio database connection to play back 
+            audio we pass this connection to those other clients
+        
+            [TODO] 
+                A database class for access to connections would be better. 
+            [/]
         */
         INIT_AUDIO_DATABASE ();
-        /*
-            end init audio db
-        */
         
         /*
-            currently recording audio regardless of whether cameras are disabled
-            or not
-        
-            BUG:
-            trouble is, if there aren't any video frames then the audio will not
-            be played back; might be able to export it though.
+            [BUG]
+                Trouble is, if there aren't any video frames then the audio will 
+                not be played back; might be able to export it though.
+            [/]
         */
         RECORD_AUDIO_TIMER.schedule (new captureAudioTimerTask (), 500, 1000);
-        /*
-            end audio database initialisation
-        */
+        //</editor-fold>
         
         setTitle ("logFarmDMS :: " + CAMERA_NUMBER);
         
@@ -381,6 +388,92 @@ public class GUI extends javax.swing.JFrame implements Constants {
         setCameraConfigs ();
     }
     
+    /**
+     * GUI constructor for additional cameras.
+     * 
+     * [TODO] 
+     *      Unit test.
+     * [/]
+     * 
+     * @param camNum
+     * @param audioDbConnection 
+     */
+    public GUI (Integer camNum,
+                Connection audioDbConnection) {
+        
+        initComponents ();
+        
+        CAMERA_NUMBER = camNum;
+        
+        /*
+            camera database
+        */
+        if (CAMERAS_DETAILS_HM.containsKey (CAMERA_NUMBER.toString ())
+            && CAMERAS_DETAILS_HM.get (CAMERA_NUMBER.toString ()).getProperty ("enabled").equals ("yes")) {
+        
+            INIT_CAMERA_DATABASE ();
+        }
+        /*
+            end camera database
+        */
+        
+        /*
+            sub-GUI so use main-gui's audio db connection
+        */
+        audio_database_connection = audioDbConnection;
+        /*
+            end init audio db
+        */
+        
+        setDefaultCloseOperation (DO_NOTHING_ON_CLOSE); 
+        
+        setTitle ("logFarmDMS :: " + CAMERA_NUMBER);
+        
+        setIconImage (frameIcon);
+        
+        /*
+            big screen
+        */
+        BIG_SCREEN = new BigScreen (playToggleButton, audioPlaybackRowId_i);
+        BIG_SCREEN.setTitle ("logFarm DMS :: " + CAMERA_NUMBER + " :: live"); 
+        /*
+            set the initial location of bigScreen
+        */
+        BIG_SCREEN.setLocation (getX () + (getWidth()/2), 
+                                getY () + (getHeight ()/2));
+        /*
+            end big screen
+        */
+        
+        /*
+            export gui
+        */
+        EXPORT_GUI = new ExportGui (recordToggleButton,
+                                    statusBarLabel,
+                                    camera_database_connection,
+                                    audio_database_connection,
+                                    CAMERA_NUMBER);
+        
+        EXPORT_GUI.setLocation (getX () + (getWidth()/2), 
+                                getY () + (getHeight ()/2));
+        /*
+            end export gui
+        */
+
+        /*
+            set sub-gui configuration values
+        */
+        setCameraConfigs ();
+    }
+
+    /**
+    *   [TODO]
+    *       Required a unit test.
+    *       Needs to return a value.       
+    *   [/]
+    * 
+    * @return void
+    */
     final public void setCameraConfigs () {
         
         if (CAMERAS_DETAILS_HM.containsKey (CAMERA_NUMBER.toString ())
@@ -469,15 +562,24 @@ public class GUI extends javax.swing.JFrame implements Constants {
     }
     
     /**
-        @return for unit testing 
+     * [TODO] 
+     *      Move to a separate class.
+     *  
+     *      Documentation.
+     * [/]
+     * 
+     * @return Boolean for unit testing 
     */
     final public Boolean INIT_CAMERA_DATABASE () {
         
         try {
 
             /*
-                make sure org.sqlite.JDBC is in the class in the path
-                and throw a ClassNotFoundException if it isn't
+                Make sure org.sqlite.JDBC is in the class path
+                and throw a ClassNotFoundException if it isn't.
+            
+                For development it is located here: 
+                opencv_for_logfarmDMS/sqlite-jdbc-3.8.11.2.jar
             */
             Class.forName ("org.sqlite.JDBC");
 
@@ -523,8 +625,12 @@ public class GUI extends javax.swing.JFrame implements Constants {
     }
     
     /**
-        @return for unit testing 
-    */
+     * [TODO]
+     *      Documentation.
+     * [/]
+     * 
+     * @return Boolean for unit testing 
+     */
     final public Boolean INIT_AUDIO_DATABASE () {
         
         try {
@@ -840,6 +946,13 @@ public class GUI extends javax.swing.JFrame implements Constants {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * [TODO]
+     *      Documentation.
+     *      Unit test.
+     * [/]
+     * @param evt 
+     */
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
 
         if (recordToggleButton.isSelected ()) recordToggleButton.doClick ();
@@ -897,6 +1010,12 @@ public class GUI extends javax.swing.JFrame implements Constants {
         }
     }//GEN-LAST:event_formWindowClosing
 
+    /**
+     * [TODO]
+     *      Documentation.
+     *      Unit test, return value.
+     * [/] 
+     */
     public void cleanUp () {
         
         audioPlayback_b = Boolean.FALSE; 
@@ -908,6 +1027,12 @@ public class GUI extends javax.swing.JFrame implements Constants {
         if (HIDE_TIMER != null) HIDE_TIMER.cancel ();
     }
     
+    /**
+     * [TODO]
+     *      Documentation.
+     *      Unit test, return value.
+     * [/] 
+     */
     private void liveImageLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_liveImageLabelMouseClicked
 
         if (playToggleButton.isSelected ()) playToggleButton.doClick ();
@@ -923,6 +1048,12 @@ public class GUI extends javax.swing.JFrame implements Constants {
         BIG_SCREEN.setVisible (true);
     }//GEN-LAST:event_liveImageLabelMouseClicked
 
+    /**
+     * [TODO]
+     *      Documentation.
+     *      Unit test, return value.
+     * [/] 
+     */
     private void recordToggleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_recordToggleButtonActionPerformed
 
         testAudioKeepGoing ();
@@ -939,6 +1070,12 @@ public class GUI extends javax.swing.JFrame implements Constants {
         }
     }//GEN-LAST:event_recordToggleButtonActionPerformed
 
+    /**
+     * [TODO]
+     *      Documentation.
+     *      Unit test, return value.
+     * [/] 
+     */
     private void playToggleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_playToggleButtonActionPerformed
 
         if (!playToggleButton.isSelected ()) {
@@ -957,6 +1094,12 @@ public class GUI extends javax.swing.JFrame implements Constants {
         }
     }//GEN-LAST:event_playToggleButtonActionPerformed
 
+    /**
+     * [TODO]
+     *      Documentation.
+     *      Unit test, return value.
+     * [/] 
+     */
     private void playbackSliderMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_playbackSliderMouseReleased
 
         sliderHasBeenMoved_b = Boolean.TRUE;
@@ -964,6 +1107,12 @@ public class GUI extends javax.swing.JFrame implements Constants {
         showBigScreen (); 
     }//GEN-LAST:event_playbackSliderMouseReleased
 
+    /**
+     * [TODO]
+     *      Documentation.
+     *      Unit test, return value.
+     * [/] 
+     */
     private void stepBackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stepBackButtonActionPerformed
 
         showBigScreen ();
@@ -976,6 +1125,12 @@ public class GUI extends javax.swing.JFrame implements Constants {
         }
     }//GEN-LAST:event_stepBackButtonActionPerformed
 
+    /**
+     * [TODO]
+     *      Documentation.
+     *      Unit test, return value.
+     * [/] 
+     */
     private void stepForwardButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stepForwardButtonActionPerformed
         
         showBigScreen ();
@@ -988,6 +1143,12 @@ public class GUI extends javax.swing.JFrame implements Constants {
         }
     }//GEN-LAST:event_stepForwardButtonActionPerformed
 
+    /**
+     * [TODO]
+     *      Documentation.
+     *      Unit test, return value.
+     * [/] 
+     */
     private void exportButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportButtonActionPerformed
         
         if (!playbackDateLabel.getText ().equals ("---")) {
@@ -1001,6 +1162,12 @@ public class GUI extends javax.swing.JFrame implements Constants {
         }
     }//GEN-LAST:event_exportButtonActionPerformed
 
+    /**
+     * [TODO]
+     *      Documentation.
+     *      Unit test, return value.
+     * [/] 
+     */
     private void showBigScreen () {
         
         setSliderMaximumValue ();
@@ -1051,9 +1218,13 @@ public class GUI extends javax.swing.JFrame implements Constants {
     }
 
     /**
-        this should only be called when we know a database connection is open
-    
-        @return for unit testing        
+     * [TODO]
+     *      Documentation.
+     * [/] 
+     *
+     * This should only be called when we know a database connection is open
+     * 
+     * @return Boolean for unit testing        
     */
     final public Boolean setSliderMaximumValue () {
     
@@ -1166,6 +1337,12 @@ public class GUI extends javax.swing.JFrame implements Constants {
     private javax.swing.JRadioButton videoAudioRadioButton;
     // End of variables declaration//GEN-END:variables
 
+    /**
+     * [TODO]
+     *      Documentation.
+     *      Unit test, return value.
+     * [/] 
+     */
     public class CaptureTimerTask extends TimerTask {
 
         private Integer statusRecordTickCounter = 0;
@@ -1531,6 +1708,12 @@ public class GUI extends javax.swing.JFrame implements Constants {
         }
     }
     
+    /**
+     * [TODO]
+     *      Documentation.
+     *      Unit test, return value.
+     * [/] 
+     */
     private static void testAudioKeepGoing () {
         
         for (Enumeration<Integer> e = GUIS_HM.keys (); e.hasMoreElements (); ) {
@@ -1548,6 +1731,12 @@ public class GUI extends javax.swing.JFrame implements Constants {
         }
     }
     
+    /**
+     * [TODO]
+     *      Documentation.
+     *      Unit test, return value.
+     * [/] 
+     */
     private class captureAudioTimerTask extends TimerTask {
         
         @Override
@@ -1560,6 +1749,12 @@ public class GUI extends javax.swing.JFrame implements Constants {
         }
     }
     
+    /**
+     * [TODO]
+     *      Documentation.
+     *      Unit test, return value.
+     * [/] 
+     */
     private class PlaybackAudioTimerTask extends TimerTask {
         
         private final ByteArrayOutputStream DATA_BYTE_ARRAY_OUTPUTSTREAM = new ByteArrayOutputStream (1024);
@@ -1709,7 +1904,11 @@ public class GUI extends javax.swing.JFrame implements Constants {
     }
     
     /**
-     * @return for Unit testing      
+     * [TODO]
+     *      Documentation.
+     * [/] 
+     * 
+     * @return Boolean for Unit testing      
     */
     public Boolean recordAudioForAfewSeconds () {
 
@@ -1777,6 +1976,12 @@ public class GUI extends javax.swing.JFrame implements Constants {
         return Boolean.TRUE;
     }
     
+    /**
+     * [TODO]
+     *      Documentation.
+     *      Unit test, return value.
+     * [/] 
+     */
     private AudioFormat getFormat () {
 
         final float SAMPLE_RATE = 11025;
@@ -1792,6 +1997,12 @@ public class GUI extends javax.swing.JFrame implements Constants {
                                 BIG_ENDIAN);
     }
     
+    /**
+     * [TODO]
+     *      Documentation.
+     *      Unit test, return value.
+     * [/] 
+     */
     private class HideTimerTask extends TimerTask {
 
         @Override
@@ -1801,6 +2012,14 @@ public class GUI extends javax.swing.JFrame implements Constants {
         }
     }
     
+    /**
+     * [TODO]
+     *      Documentation.
+     *      Unit test, return value.
+     * 
+     *      This can be moved to a separate class.
+     * [/] 
+     */
     public static boolean isNumeric (String s) {
 
         if (s.length () <= 0) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, paulb@logfarm.net
+ * Copyright (c) 2018, tuxjsmith@gmail.com, paulb@logfarm.net
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
