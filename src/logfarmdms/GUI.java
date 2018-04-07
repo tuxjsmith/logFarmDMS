@@ -78,6 +78,13 @@ public class GUI extends javax.swing.JFrame implements Constants {
     */
     
     private final Object FONT = new CvFont ();
+    
+    /*
+        [TODO] 
+            Can these timers reside in a separate class, along with their
+            TimerTasks.
+        [/]
+    */
     private final Timer CAPTURE_TIMER = new Timer (), 
                         RECORD_AUDIO_TIMER = new Timer (), 
                         AUDIO_PLAYBACK_TIMER = new Timer (),
@@ -254,9 +261,7 @@ public class GUI extends javax.swing.JFrame implements Constants {
         
         setIconImage (frameIcon);
         
-        /*
-            big screen
-        */
+        //<editor-fold defaultstate="collapsed" desc="Big screen instantiation.">
         BIG_SCREEN = new BigScreen (playToggleButton, audioPlaybackRowId_i);
         BIG_SCREEN.setTitle ("logFarm DMS :: " + CAMERA_NUMBER + " :: live"); 
         /*
@@ -264,13 +269,9 @@ public class GUI extends javax.swing.JFrame implements Constants {
         */
         BIG_SCREEN.setLocation (getX () + (getWidth()/2), 
                                 getY () + (getHeight ()/2));
-        /*
-            end big screen
-        */
+        //</editor-fold>
          
-        /*
-            export gui
-        */
+        //<editor-fold defaultstate="collapsed" desc="Export GUI instantiation.">
         EXPORT_GUI = new ExportGui (recordToggleButton,
                                     statusBarLabel,
                                     camera_database_connection,
@@ -279,9 +280,7 @@ public class GUI extends javax.swing.JFrame implements Constants {
 
         EXPORT_GUI.setLocation (getX () + (getWidth()/2), 
                                 getY () + (getHeight ()/2));
-        /*
-            end export gui
-        */
+        //</editor-fold>
 
         /*
             camera globals
@@ -292,8 +291,14 @@ public class GUI extends javax.swing.JFrame implements Constants {
         */
 
         /*
-            loop to create a collection of cameras connected to the computer
-            loop count is set in configuration.json
+            Loop over a collection of camera details and create a collection
+            of OpenCV camera objects.
+        
+            The reason for two camera collections:
+            - CAMERAS_DETAILS_HM :: Saved preferences from the configuration file.
+            - CAMERAS_HM :: OpenCV camera objects.
+        
+            Both collections have a numerical key but of type: String
         */
         for (int i = 0; i < Integer.valueOf (CAMERAS_DETAILS_HM.get ("global").getProperty ("number_of_cameras")); i++) {
 
@@ -306,9 +311,7 @@ public class GUI extends javax.swing.JFrame implements Constants {
 
                     CAMERAS_HM.put (i, CAMERA);
 
-                    /*
-                        height and width
-                    */ 
+                    //<editor-fold defaultstate="collapsed" desc="Set height and width of each camera capture image."> 
                     if (CAMERAS_DETAILS_HM.get ("global").getProperty ("camera_resolution").split (",").length == 2
                         && isNumeric (CAMERAS_DETAILS_HM.get ("global").getProperty ("camera_resolution").split (",")[0].trim ())
                         && isNumeric (CAMERAS_DETAILS_HM.get ("global").getProperty ("camera_resolution").split (",")[1].trim ())) {
@@ -332,16 +335,12 @@ public class GUI extends javax.swing.JFrame implements Constants {
                                               CV_CAP_PROP_FRAME_HEIGHT,
                                               480);
                     }
-                    /*
-                        end height and width
-                    */
+                    //</editor-fold>
                 }
             }
         }
 
-        /*
-            spawn additional guis
-        */
+        //<editor-fold defaultstate="collapsed" desc="Spawn additional GUIs.">
         if (!CAMERAS_HM.isEmpty ()) {
 
             for (Enumeration<Integer> e = CAMERAS_HM.keys (); e.hasMoreElements (); ) {
@@ -376,9 +375,7 @@ public class GUI extends javax.swing.JFrame implements Constants {
             audioOnlyRadioButton.setSelected (Boolean.TRUE);
             videoAudioRadioButton.setEnabled (Boolean.FALSE);
         }
-        /*
-            end spawn additional guis
-        */
+        //</editor-fold>
         
         /*
             if camera 0 (main-gui camera) is enabled
@@ -467,12 +464,20 @@ public class GUI extends javax.swing.JFrame implements Constants {
     }
 
     /**
-    *   [TODO]
-    *       Required a unit test.
-    *       Needs to return a value.       
-    *   [/]
-    * 
-    * @return void
+     * Starts the automatic recording process.
+     * 
+     * [TODO]
+     *      Documentation.
+     *      Required a unit test.
+     *      Needs to return a value.       
+     * [/]
+     * 
+     * [BUG]
+     *      Looks like recording might be starting automatically even when 
+     *      start_recording_at_startup != "yes"
+     * [/]
+     * 
+     * @return void
     */
     final public void setCameraConfigs () {
         
@@ -564,7 +569,6 @@ public class GUI extends javax.swing.JFrame implements Constants {
     /**
      * [TODO] 
      *      Move to a separate class.
-     *  
      *      Documentation.
      * [/]
      * 
@@ -1151,6 +1155,12 @@ public class GUI extends javax.swing.JFrame implements Constants {
      */
     private void exportButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportButtonActionPerformed
         
+        /*
+            [TODO]
+                Would prefer we maintain status and states in a sparate
+                class.
+            [/]
+        */
         if (!playbackDateLabel.getText ().equals ("---")) {
             
             EXPORT_GUI.setDate (playbackDateLabel.getText ()); 
