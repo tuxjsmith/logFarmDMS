@@ -43,6 +43,10 @@ public class OpenConfiguration implements Constants {
     /**
      * Read details from the configuration file. If the file does not exist<br>
      * then create a new one.
+     * 
+     * [TODO]
+     *      Unit test.
+     * [/]
      */
     public static void openConfiguration () {
 
@@ -142,6 +146,10 @@ public class OpenConfiguration implements Constants {
 
     /**
      * Create a default configuration file.
+     * 
+     * [TODO]
+     *      Unit test.
+     * [/]
      */
     public static void writeDefaultConfiguration () {
 

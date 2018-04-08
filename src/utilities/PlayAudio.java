@@ -44,6 +44,14 @@ public class PlayAudio extends Thread {
     private final DataLine.Info DATA_LINE_INFO;
     private final ByteArrayOutputStream DBA_OS;
 
+    /**
+     * [TODO]
+     *      Documentation.
+     *      Unit test.
+     * [/]
+     * @param af
+     * @param dbaos 
+     */
     public PlayAudio (AudioFormat af,
                       ByteArrayOutputStream dbaos) {
 
@@ -68,7 +76,7 @@ public class PlayAudio extends Thread {
             playbackLine.close ();
         }
     }
-
+    
     @Override
     public void run () {
 

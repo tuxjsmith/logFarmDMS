@@ -34,6 +34,23 @@ public class CameraDetails {
 
     public CameraDetails () {}
     
+    /**
+     * [TODO]
+     *      Documentation.
+     *      Unit test.
+     * [/]
+     * @param number
+     * @param maximum_db_size
+     * @param db_location
+     * @param enabled
+     * @param iconify_at_start
+     * @param hide
+     * @param start_recording_at_startup
+     * @param record_video_and_audio_by_default
+     * @param record_audio_only_by_default
+     * @param mute_playback_by_default
+     * @param screen_location 
+     */
     public CameraDetails (String number,
                           String maximum_db_size,
                           String db_location,
@@ -61,11 +78,27 @@ public class CameraDetails {
         PROPERTIES_HM.put ("screen_location", screen_location);
     }
     
+    /**
+     * [TODO]
+     *      Documentation.
+     *      Unit test.
+     * [/]
+     * @param s
+     * @return 
+     */
     public String getProperty (String s) {
         
         return PROPERTIES_HM.get (s);
     }
     
+    /**
+     * [TODO]
+     *      Documentation.
+     *      Unit test.
+     * [/]
+     * @param key
+     * @param value 
+     */
     public void setProperty (String key,
                              String value) {
         

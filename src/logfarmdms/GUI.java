@@ -262,6 +262,12 @@ public class GUI extends javax.swing.JFrame implements Constants {
         setIconImage (frameIcon);
         
         //<editor-fold defaultstate="collapsed" desc="Big screen instantiation.">
+        /*
+            [TODO]
+                Big screen init appears twice, here and the other constructor.
+                Can we move it to a method so constructors can call that.
+            [/]
+        */
         BIG_SCREEN = new BigScreen (playToggleButton, audioPlaybackRowId_i);
         BIG_SCREEN.setTitle ("logFarm DMS :: " + CAMERA_NUMBER + " :: live"); 
         /*
@@ -272,6 +278,12 @@ public class GUI extends javax.swing.JFrame implements Constants {
         //</editor-fold>
          
         //<editor-fold defaultstate="collapsed" desc="Export GUI instantiation.">
+        /*
+            [TODO]
+                Export GUI init appears twice, here and the other constructor.
+                Can we move it to a method so constructors can call that.
+            [/]
+        */
         EXPORT_GUI = new ExportGui (recordToggleButton,
                                     statusBarLabel,
                                     camera_database_connection,
@@ -378,8 +390,9 @@ public class GUI extends javax.swing.JFrame implements Constants {
         //</editor-fold>
         
         /*
-            if camera 0 (main-gui camera) is enabled
+            Starts the automatic recording process.
         
+            If camera 0 (main-gui camera) is enabled then
             set configuration values
         */
         setCameraConfigs ();
@@ -428,8 +441,12 @@ public class GUI extends javax.swing.JFrame implements Constants {
         
         setIconImage (frameIcon);
         
+        //<editor-fold defaultstate="collapsed" desc="Big screen instantiation.">
         /*
-            big screen
+            [TODO]
+                Big screen init appears twice, here and the other constructor.
+                Can we move it to a method so constructors can call that.
+            [/]
         */
         BIG_SCREEN = new BigScreen (playToggleButton, audioPlaybackRowId_i);
         BIG_SCREEN.setTitle ("logFarm DMS :: " + CAMERA_NUMBER + " :: live"); 
@@ -438,27 +455,29 @@ public class GUI extends javax.swing.JFrame implements Constants {
         */
         BIG_SCREEN.setLocation (getX () + (getWidth()/2), 
                                 getY () + (getHeight ()/2));
+        //</editor-fold>
+         
+        //<editor-fold defaultstate="collapsed" desc="Export GUI instantiation.">
         /*
-            end big screen
-        */
-        
-        /*
-            export gui
+            [TODO]
+                Export GUI init appears twice, here and the other constructor.
+                Can we move it to a method so constructors can call that.
+            [/]
         */
         EXPORT_GUI = new ExportGui (recordToggleButton,
                                     statusBarLabel,
                                     camera_database_connection,
                                     audio_database_connection,
                                     CAMERA_NUMBER);
-        
+
         EXPORT_GUI.setLocation (getX () + (getWidth()/2), 
                                 getY () + (getHeight ()/2));
-        /*
-            end export gui
-        */
+        //</editor-fold>
 
         /*
-            set sub-gui configuration values
+            Starts the automatic recording process.
+        
+            Set this gui's configuration values.
         */
         setCameraConfigs ();
     }
@@ -481,6 +500,10 @@ public class GUI extends javax.swing.JFrame implements Constants {
     */
     final public void setCameraConfigs () {
         
+        /*
+            Make sure we have configuration details for this camera number
+            and the configuration says this camera should be enabled.
+        */
         if (CAMERAS_DETAILS_HM.containsKey (CAMERA_NUMBER.toString ())
             && CAMERAS_DETAILS_HM.get (CAMERA_NUMBER.toString ()).getProperty ("enabled").equals ("yes")) {
 
@@ -515,30 +538,46 @@ public class GUI extends javax.swing.JFrame implements Constants {
             if (CAMERAS_DETAILS_HM.get (CAMERA_NUMBER.toString ()).getProperty ("record_audio_only_by_default").equals ("yes")) {
                 
                 /*
-                    if this is not called and audio recording is using a USB camera 
-                    then the microphone may not work until at least a single image
-                    is pulled from it, perhaps this sparks the webcam's microphone
-                    into action
+                    [STRANGENESS]
+                
+                        Audio only from a webcam's microphone.
+                        
+                        If we are recording audio from a USB microphone, then
+                        it may not work until at least a single image is pulled 
+                        from the camera. Perhaps this action sparks the webcam's
+                        microphone into aciton.
+                    [/]
                 */
-                BufferedImage bi = cvQueryFrame ((CvCapture) CAMERAS_HM.get (CAMERA_NUMBER)).getBufferedImage ();
+                final BufferedImage BI = cvQueryFrame ((CvCapture) CAMERAS_HM.get (CAMERA_NUMBER)).getBufferedImage ();
                 
                 audioOnlyRadioButton.doClick ();
             }
             
             /*
-                start record and playback timers
+                [BUG]
+                    Needs to take into consideration:
+            
+                    CAMERA_NUMBER.toString ()).getProperty ("start_recording_at_startup")
+                [/]
+            
+                Start capture timers.
             */
             CAPTURE_TIMER.schedule (new CaptureTimerTask (), 250, 250);
 
             AUDIO_PLAYBACK_TIMER.schedule (new PlaybackAudioTimerTask (), 5000, 5000);
             /*
-                end record and playback timers
+                End capture timers.
             */
             
+            /*
+                [TODO]
+                    Documentation: Explain why we do this here.
+                [/]
+            */
             setSliderMaximumValue ();
         }
         /*
-            the main-gui has not been enabled by the configuration file
+            The configuration says don't enabled the controls on this GUI.
         */
         else {
             
@@ -559,16 +598,13 @@ public class GUI extends javax.swing.JFrame implements Constants {
             
             BIG_SCREEN.getImageLabel ().setText ("<html><bod><center>if you can see this text<br>then the camera has been disabled in:<br><b>configuration.json</b><center></body></html>"); 
             
-            /*
-                because this is the main-gui iconify it
-            */
             setState (JFrame.ICONIFIED); 
         }
     }
     
     /**
      * [TODO] 
-     *      Move to a separate class.
+     *      Move to a separate database managing class.
      *      Documentation.
      * [/]
      * 
@@ -591,8 +627,7 @@ public class GUI extends javax.swing.JFrame implements Constants {
 
                 camera_database_connection = DriverManager.getConnection ("jdbc:sqlite:" + CAMERAS_DETAILS_HM.get(CAMERA_NUMBER.toString ()).getProperty ("db_location") + System.getProperty ("file.separator") + "logFarmDMS_" + CAMERA_NUMBER + ".db" );
 
-                final Statement STATEMENT;
-                STATEMENT = camera_database_connection.createStatement ();
+                final Statement STATEMENT = camera_database_connection.createStatement ();
                 STATEMENT.setQueryTimeout (30);  // set timeout to 30 sec.
 
                 STATEMENT.executeUpdate ("create table fileData (date text,"
@@ -630,6 +665,7 @@ public class GUI extends javax.swing.JFrame implements Constants {
     
     /**
      * [TODO]
+     *      Move to a separate database managing class.
      *      Documentation.
      * [/]
      * 
@@ -651,8 +687,7 @@ public class GUI extends javax.swing.JFrame implements Constants {
 
                 audio_database_connection = DriverManager.getConnection ("jdbc:sqlite:" + CAMERAS_DETAILS_HM.get("global").getProperty ("audio_db_location") + System.getProperty ("file.separator") + "logFarmDMSaudio.db");
 
-                final Statement STATEMENT;
-                STATEMENT = audio_database_connection.createStatement ();
+                final Statement STATEMENT = audio_database_connection.createStatement ();
                 STATEMENT.setQueryTimeout (30);  // set timeout to 30 sec.
 
                 STATEMENT.executeUpdate ("create table fileData (date text,"
@@ -669,6 +704,12 @@ public class GUI extends javax.swing.JFrame implements Constants {
             */
         }
         catch (ClassNotFoundException | SQLException  | NullPointerException ex) {
+            
+            /*
+                [TODO]
+                    An error message similar to the camera database error message.
+                [/]
+            */
 
             System.err.println ("initAudioDatabase " + ex.getMessage ());
             
@@ -1249,6 +1290,9 @@ public class GUI extends javax.swing.JFrame implements Constants {
             
             audioPlaybackRowId_i = -1;
             
+            /*
+                We reuse sql, statement and resultSet so we don't make them final.
+            */
             String sql = "select rowid from fileData order by rowid desc limit 1";
 
             Statement statement;
@@ -1350,6 +1394,7 @@ public class GUI extends javax.swing.JFrame implements Constants {
     /**
      * [TODO]
      *      Documentation.
+     *      Move to a separate class.
      *      Unit test, return value.
      * [/] 
      */
@@ -1721,6 +1766,7 @@ public class GUI extends javax.swing.JFrame implements Constants {
     /**
      * [TODO]
      *      Documentation.
+     *      Move to a separate class.
      *      Unit test, return value.
      * [/] 
      */
@@ -1744,6 +1790,7 @@ public class GUI extends javax.swing.JFrame implements Constants {
     /**
      * [TODO]
      *      Documentation.
+     *      Move to a separate class.
      *      Unit test, return value.
      * [/] 
      */
@@ -1762,6 +1809,7 @@ public class GUI extends javax.swing.JFrame implements Constants {
     /**
      * [TODO]
      *      Documentation.
+     *      Move to a separate class.
      *      Unit test, return value.
      * [/] 
      */

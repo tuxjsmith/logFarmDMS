@@ -36,7 +36,6 @@ import java.io.IOException;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JLabel;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JToggleButton;
 import static logfarmdms.GUI.isNumeric;
@@ -49,6 +48,11 @@ import static utilities.Constants.CAMERAS_DETAILS_HM;
 public class BigScreen extends javax.swing.JFrame {
 
     private final BufferedImage BI;
+    /*
+        [TODO]
+            Can mainGuiPlaybackToggleButton be final ?
+        [/]
+    */
     private JToggleButton mainGuiPlaybackToggleButton = null;
     private final java.net.URL URL = this.getClass ().getResource ("icon_64.png");
     private final javax.swing.ImageIcon II = new javax.swing.ImageIcon (URL);
@@ -57,7 +61,7 @@ public class BigScreen extends javax.swing.JFrame {
     private Integer guiRowId = -1;
     
     /** Creates new form BigScreen
-     * @param tb main gui playback button
+     * @param tb main GUI playback button
      * @param rid
     */
     public BigScreen (JToggleButton tb,
@@ -87,11 +91,25 @@ public class BigScreen extends javax.swing.JFrame {
         }
     }
     
+    /**
+     * [TODO]
+     *      Documentation.
+     *      Unit test or black box test.
+     * [/]
+     * @return 
+     */
     public JCheckBoxMenuItem getMuteAudioMenuItem () {
         
         return menu_mute;
     }
 
+    /**
+     * [TODO]
+     *      Documentation.
+     *      Unit test.
+     * [/]
+     * @param bi 
+     */
     public void setBufferedImage (BufferedImage bi) {
 
         BI.getGraphics ().drawImage (bi,
@@ -104,6 +122,12 @@ public class BigScreen extends javax.swing.JFrame {
                                                               Image.SCALE_FAST)));
     }
     
+    /**
+     * [TODO]
+     *      Documentation.
+     *      Unit test.
+     * [/]
+     */
     private void refreshDisplay () {
         
 //        if (getTitle ().equals ("logFarmDMS :: playback")) {
@@ -117,6 +141,13 @@ public class BigScreen extends javax.swing.JFrame {
 //        }
     }
     
+    /**
+     * [TODO]
+     *      Documentation.
+     *      Unit test.
+     * [/]
+     * @return 
+     */
     public JLabel getImageLabel () {
         
         return jLabel1;
@@ -201,6 +232,13 @@ public class BigScreen extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * [TODO]
+     *      Documentation.
+     *      Unit test or black box test.
+     * [/]
+     * @param evt 
+     */
     private void formKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyReleased
         
         if (evt.getKeyCode () == java.awt.event.KeyEvent.VK_R) {
@@ -215,16 +253,37 @@ public class BigScreen extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_formKeyReleased
 
+    /**
+     * [TODO]
+     *      Documentation.
+     *      Unit test or black box test.
+     * [/]
+     * @param evt 
+     */
     private void formComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentResized
         
         refreshDisplay ();
     }//GEN-LAST:event_formComponentResized
 
+    /**
+     * [TODO]
+     *      Documentation.
+     *      Unit test or black box test.
+     * [/]
+     * @param evt 
+     */
     private void menu_copyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menu_copyActionPerformed
         
         copyImage (this);
     }//GEN-LAST:event_menu_copyActionPerformed
 
+    /**
+     * [TODO]
+     *      Documentation.
+     *      Unit test or black box test.
+     * [/]
+     * @param evt 
+     */
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         
         if (mainGuiPlaybackToggleButton.isSelected ()) {
@@ -233,6 +292,13 @@ public class BigScreen extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_formWindowClosing
 
+    /**
+     * [TODO]
+     *      Documentation.
+     *      Unit test or black box test.
+     * [/]
+     * @param evt 
+     */
     private void menu_muteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menu_muteActionPerformed
         
         if (menu_mute.isSelected ()) {
@@ -248,6 +314,13 @@ public class BigScreen extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_menu_muteActionPerformed
 
+    /**
+     * [TODO]
+     *      Documentation.
+     *      Unit test or black box test.
+     * [/]
+     * @param bs 
+     */
     public void copyImage (BigScreen bs) {
         
         Toolkit.getDefaultToolkit ().getSystemClipboard ().setContents (new Transferable () {

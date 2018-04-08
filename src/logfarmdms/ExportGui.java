@@ -40,8 +40,6 @@ import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.UIManager;
 import java.sql.*;
-//import java.util.logging.Level;
-//import java.util.logging.Logger;
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -68,6 +66,12 @@ public class ExportGui extends javax.swing.JFrame {
     
     
     /** Creates new form ExportGui
+     * 
+     * [TODO]
+     * 
+     *      Unit test.
+     * [/]
+     * 
      * @param tb main gui record toggle button so we can stop and start it
      * @param l main gui status label so we can change the text
      * @param cameraDbConnection camera database connection
@@ -95,16 +99,15 @@ public class ExportGui extends javax.swing.JFrame {
         
         jSpinner1.setValue (5);
         
-        /*
-            have no idea how this works but it stops the directories in the 
-            filechooser from being editable
+        //<editor-fold defaultstate="collapsed" desc="Stops the directories in the filechooser from being editable.">
         
+        /*
             source: http://www.coderanch.com/t/555535/GUI/java/FileChooser-readOnly
         */
-        Boolean old = UIManager.getBoolean("FileChooser.readOnly");
+        final Boolean OLD = UIManager.getBoolean("FileChooser.readOnly");
         UIManager.put("FileChooser.readOnly", Boolean.TRUE);
         FILE_CHOOSER = new JFileChooser ();
-        UIManager.put("FileChooser.readOnly", old);
+        UIManager.put("FileChooser.readOnly", OLD);
 
         FILE_CHOOSER.setFileSelectionMode (JFileChooser.DIRECTORIES_ONLY);
         FILE_CHOOSER.setMultiSelectionEnabled (false);
@@ -112,6 +115,9 @@ public class ExportGui extends javax.swing.JFrame {
         FILE_CHOOSER.setDialogTitle ("location to export video");
         FILE_CHOOSER.setApproveButtonText ("Open");
         
+        /*
+            Examining a FileChooser's parts.
+        */
 //        for (int i = 0; i < FILE_CHOOSER.getComponents ().length; i++) {
 //
 //            if (FILE_CHOOSER.getComponent (i) instanceof java.awt.Container) {
@@ -122,6 +128,7 @@ public class ExportGui extends javax.swing.JFrame {
 //                }
 //            }
 //        }
+        //</editor-fold>
         
         jLabel3.setText (System.getProperty ("user.dir") + File.separator); 
     }
@@ -255,6 +262,13 @@ public class ExportGui extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * [TODO]
+     *      Documentation.
+     *      Unit test or black box test.
+     * [/]
+     * @param evt 
+     */
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         
         FILE_CHOOSER.setSelectedFile (new File (System.getProperty ("user.dir") + File.separator));
@@ -266,11 +280,25 @@ public class ExportGui extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    /**
+     * [TODO]
+     *      Documentation.
+     *      Unit test or black box test.
+     * [/]
+     * @param evt 
+     */
     private void jSpinner1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSpinner1StateChanged
         
         if (((Integer)jSpinner1.getValue ()) < 1) jSpinner1.setValue (1);
     }//GEN-LAST:event_jSpinner1StateChanged
 
+    /**
+     * [TODO]
+     *      Documentation.
+     *      Unit test or black box test.
+     * [/]
+     * @param evt 
+     */
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         
         new Thread () {
@@ -367,11 +395,9 @@ public class ExportGui extends javax.swing.JFrame {
 
                     final String ADUIO_SQL_COMMAND = "select fileBytes, date from fileData where date >= datetime(\"" + jLabel1.getText () +"\",'0 minutes') and date <= datetime(\"" + jLabel1.getText () + "\",'" + jSpinner1.getValue () + " minutes')";
 
-                    final Statement AUDIO_STATEMENT;
-                    AUDIO_STATEMENT = AUDIO_DATABASE_CONNECTION.createStatement ();
+                    final Statement AUDIO_STATEMENT = AUDIO_DATABASE_CONNECTION.createStatement ();
 
-                    final ResultSet AUDIO_RESULT_SET;
-                    AUDIO_RESULT_SET = AUDIO_STATEMENT.executeQuery (ADUIO_SQL_COMMAND);
+                    final ResultSet AUDIO_RESULT_SET = AUDIO_STATEMENT.executeQuery (ADUIO_SQL_COMMAND);
 
                     while (AUDIO_RESULT_SET.next ()) {
 
@@ -468,6 +494,13 @@ public class ExportGui extends javax.swing.JFrame {
     private javax.swing.JSpinner jSpinner1;
     // End of variables declaration//GEN-END:variables
 
+    /**
+     * [TODO]
+     *      Documentation.
+     *      Unit test.
+     * [/]
+     * @param s 
+     */
     public void setDate (String s) {
         
         jLabel1.setText (s.split ("\\.")[0]);
@@ -478,6 +511,13 @@ public class ExportGui extends javax.swing.JFrame {
 //        mainGuiToggleRecordButton = tb;
 //    }
     
+    /**
+     * [TODO]
+     *      Documentation.
+     *      Unit test.
+     * [/]
+     * @return 
+     */
     private AudioFormat getFormat () {
 
         final float SAMPLE_RATE = 11025;
