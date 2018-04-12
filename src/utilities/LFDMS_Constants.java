@@ -27,9 +27,12 @@
 package utilities;
 
 import java.util.concurrent.ConcurrentHashMap;
-import logfarmdms.GUI;
+import logfarmdms.LFDMS_GUI;
 
-public interface Constants {
+/**
+ * @author tuxjsmith@gmail.com
+ */
+public interface LFDMS_Constants {
 
     String VERSION = "3.01 alpha";
     
@@ -37,7 +40,7 @@ public interface Constants {
         GUIs are not the same as cameras, this collection is used to clean up
         and close timers when the application is closed.
     */
-    ConcurrentHashMap<Integer, GUI> GUIS_HM = new ConcurrentHashMap ();
+    ConcurrentHashMap<Integer, LFDMS_GUI> GUIS_HM = new ConcurrentHashMap ();
     
     /*
         Use this collection to store camera numbers and OpenCV camera objects.
@@ -47,5 +50,5 @@ public interface Constants {
     /*
         Camera preferences retrieved from the configuration file.
     */
-    ConcurrentHashMap<String, CameraDetails> CAMERAS_DETAILS_HM = new ConcurrentHashMap ();
+    ConcurrentHashMap<String, LFDMS_CameraDetails> CAMERAS_DETAILS_HM = new ConcurrentHashMap ();
 }

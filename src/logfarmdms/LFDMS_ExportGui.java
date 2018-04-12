@@ -46,24 +46,23 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.swing.JLabel;
 import javax.swing.JToggleButton;
-import static logfarmdms.GUI.isNumeric;
-import static utilities.Constants.CAMERAS_DETAILS_HM;
+import static logfarmdms.LFDMS_GUI.isNumeric;
+import static utilities.LFDMS_Constants.CAMERAS_DETAILS_HM;
+import utilities.LFDMS_DatabaseStuff;
 
 /**
- *
- * @author tuxjsmith
+ * @author tuxjsmith@gmail.com
  */
-public class ExportGui extends javax.swing.JFrame {
+public class LFDMS_ExportGui extends javax.swing.JFrame {
 
     private final JFileChooser FILE_CHOOSER;
-    private JToggleButton mainGuiToggleRecordButton = null;
-    private JLabel mainGuiStatusLabel = null;
-    private final Connection CAMERA_DATABASE_CONNECTION, AUDIO_DATABASE_CONNECTION;
+    private final JToggleButton GUI_RECORD_TOGGLE_BUTTON;
+    private final JLabel GUI_STATUS_LABEL;
+    private final Connection CAMERA_DATABASE_CONNECTION;
     private final Integer CAMERA_NUMBER;
-    private java.net.URL url = this.getClass ().getResource ("icon_64.png");
-    private javax.swing.ImageIcon ii = new javax.swing.ImageIcon (url);
-    private java.awt.Image frameIcon = ii.getImage ();
-    
+    private final java.net.URL URL = this.getClass ().getResource ("/res/icon_64.png");
+    private final javax.swing.ImageIcon II = new javax.swing.ImageIcon (URL);
+    private final java.awt.Image FRAME_ICON = II.getImage ();
     
     /** Creates new form ExportGui
      * 
@@ -72,30 +71,28 @@ public class ExportGui extends javax.swing.JFrame {
      *      Unit test.
      * [/]
      * 
-     * @param tb main gui record toggle button so we can stop and start it
-     * @param l main gui status label so we can change the text
+     * @param guiRecordToggleButton gui record toggle button so we can stop and start it
+     * @param guiStatusLabel gui status label so we can change the text
      * @param cameraDbConnection camera database connection
-     * @param audioDbConnection audio database connection
-     * @param camera used to help identify the export directory
+     * @param cameraNumber used to help identify the export directory
     */
-    public ExportGui (JToggleButton tb,
-                      JLabel l,
-                      Connection cameraDbConnection,
-                      Connection audioDbConnection,
-                      Integer camera) {
+    public LFDMS_ExportGui (JToggleButton guiRecordToggleButton,
+                            JLabel guiStatusLabel,
+                            Connection cameraDbConnection,
+                            Integer cameraNumber) {
         
         initComponents ();
         
-        setIconImage (frameIcon);
+        setIconImage (FRAME_ICON);
         
-        CAMERA_NUMBER = camera;
+        CAMERA_NUMBER = cameraNumber;
         
         CAMERA_DATABASE_CONNECTION = cameraDbConnection;
-        AUDIO_DATABASE_CONNECTION = audioDbConnection;
+//        AUDIO_DATABASE_CONNECTION = audioDbConnection;
         
-        mainGuiToggleRecordButton = tb;
+        GUI_RECORD_TOGGLE_BUTTON = guiRecordToggleButton;
         
-        mainGuiStatusLabel = l;
+        GUI_STATUS_LABEL = guiStatusLabel;
         
         jSpinner1.setValue (5);
         
@@ -155,7 +152,6 @@ public class ExportGui extends javax.swing.JFrame {
 
         setTitle("export to video file");
         setMinimumSize(new java.awt.Dimension(355, 190));
-        setPreferredSize(new java.awt.Dimension(355, 190));
         setResizable(false);
 
         jPanel3.setBackground(new java.awt.Color(51, 51, 51));
@@ -178,7 +174,7 @@ public class ExportGui extends javax.swing.JFrame {
         jPanel3.add(jLabel3);
 
         jButton1.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
-        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/logfarmdms/document-open.png"))); // NOI18N
+        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/res/document-open.png"))); // NOI18N
         jButton1.setToolTipText("choose location");
         jButton1.setDoubleBuffered(true);
         jButton1.setPreferredSize(new java.awt.Dimension(34, 34));
@@ -246,7 +242,7 @@ public class ExportGui extends javax.swing.JFrame {
         jPanel4.add(jPanel6);
 
         jButton2.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
-        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/logfarmdms/object-rotate-right.png"))); // NOI18N
+        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/res/object-rotate-right.png"))); // NOI18N
         jButton2.setToolTipText("export");
         jButton2.setDoubleBuffered(true);
         jButton2.setPreferredSize(new java.awt.Dimension(34, 34));
@@ -264,6 +260,7 @@ public class ExportGui extends javax.swing.JFrame {
 
     /**
      * [TODO]
+     *      Rename button.
      *      Documentation.
      *      Unit test or black box test.
      * [/]
@@ -282,6 +279,7 @@ public class ExportGui extends javax.swing.JFrame {
 
     /**
      * [TODO]
+     *      Rename button.
      *      Documentation.
      *      Unit test or black box test.
      * [/]
@@ -294,6 +292,8 @@ public class ExportGui extends javax.swing.JFrame {
 
     /**
      * [TODO]
+     *      Move to database stuff class.
+     *      Rename this button.
      *      Documentation.
      *      Unit test or black box test.
      * [/]
@@ -310,10 +310,10 @@ public class ExportGui extends javax.swing.JFrame {
 
                 Boolean wasRecordButtonSelected_b = Boolean.FALSE;
                 
-                if (mainGuiToggleRecordButton != null
-                    && mainGuiToggleRecordButton.isSelected ()) {
+                if (GUI_RECORD_TOGGLE_BUTTON != null
+                    && GUI_RECORD_TOGGLE_BUTTON.isSelected ()) {
                     
-                    mainGuiToggleRecordButton.doClick ();
+                    GUI_RECORD_TOGGLE_BUTTON.doClick ();
                     
                     wasRecordButtonSelected_b = Boolean.TRUE;
                 }
@@ -350,12 +350,12 @@ public class ExportGui extends javax.swing.JFrame {
                     
                     while (RESULT_SET.next ()) {
 
-                        mainGuiStatusLabel.setText ("exporting ");
+                        GUI_STATUS_LABEL.setText ("exporting ");
                         statusExportTickCounter++;
-                        if (statusExportTickCounter <= 2) mainGuiStatusLabel.setText ("exporting \\");
-                        else if (statusExportTickCounter > 2 && statusExportTickCounter <= 4) mainGuiStatusLabel.setText ("exporting |");
-                        else if (statusExportTickCounter > 4 && statusExportTickCounter <= 6) mainGuiStatusLabel.setText ("exporting /");
-                        else if (statusExportTickCounter > 6 && statusExportTickCounter < 8) mainGuiStatusLabel.setText ("exporting --");
+                        if (statusExportTickCounter <= 2) GUI_STATUS_LABEL.setText ("exporting \\");
+                        else if (statusExportTickCounter > 2 && statusExportTickCounter <= 4) GUI_STATUS_LABEL.setText ("exporting |");
+                        else if (statusExportTickCounter > 4 && statusExportTickCounter <= 6) GUI_STATUS_LABEL.setText ("exporting /");
+                        else if (statusExportTickCounter > 6 && statusExportTickCounter < 8) GUI_STATUS_LABEL.setText ("exporting --");
                         else statusExportTickCounter = 0;
                         
                         BufferedImage image_bi;
@@ -395,7 +395,7 @@ public class ExportGui extends javax.swing.JFrame {
 
                     final String ADUIO_SQL_COMMAND = "select fileBytes, date from fileData where date >= datetime(\"" + jLabel1.getText () +"\",'0 minutes') and date <= datetime(\"" + jLabel1.getText () + "\",'" + jSpinner1.getValue () + " minutes')";
 
-                    final Statement AUDIO_STATEMENT = AUDIO_DATABASE_CONNECTION.createStatement ();
+                    final Statement AUDIO_STATEMENT = LFDMS_DatabaseStuff.getAudioDatabaseConnection ().createStatement ();
 
                     final ResultSet AUDIO_RESULT_SET = AUDIO_STATEMENT.executeQuery (ADUIO_SQL_COMMAND);
 
@@ -472,10 +472,10 @@ public class ExportGui extends javax.swing.JFrame {
                 setCursor (new Cursor (Cursor.DEFAULT_CURSOR));
                 
                 if (wasRecordButtonSelected_b
-                    && mainGuiToggleRecordButton != null
-                    && !mainGuiToggleRecordButton.isSelected ()) {
+                    && GUI_RECORD_TOGGLE_BUTTON != null
+                    && !GUI_RECORD_TOGGLE_BUTTON.isSelected ()) {
                     
-                    mainGuiToggleRecordButton.doClick ();
+                    GUI_RECORD_TOGGLE_BUTTON.doClick ();
                 }
             }
         }.start ();
@@ -496,6 +496,7 @@ public class ExportGui extends javax.swing.JFrame {
 
     /**
      * [TODO]
+     *      More informative parameter name.
      *      Documentation.
      *      Unit test.
      * [/]

@@ -45,20 +45,20 @@ public class GUITest {
 //    @Test
 //    public void testCleanUp () {
 //        System.out.println ("cleanUp");
-//        GUI instance = new GUI ();
+//        LFDMS_GUI instance = new LFDMS_GUI ();
 //        instance.cleanUp ();
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail ("The test case is a prototype.");
 //    }
 
     /**
-     * Test of main method, of class GUI.
+     * Test of main method, of class LFDMS_GUI.
      */
 //    @Test
 //    public void testMain () {
 //        System.out.println ("main");
 //        String[] args = null;
-//        GUI.main (args);
+//        LFDMS_GUI.main (args);
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail ("The test case is a prototype.");
 //    }
@@ -67,52 +67,52 @@ public class GUITest {
 //    public void testSetSliderMaximumValue () {
 //        
 //        System.out.println ("setSliderMaximumValue");
-//        GUI instance = new GUI ();
+//        LFDMS_GUI instance = new LFDMS_GUI ();
 //        Boolean expResult = Boolean.TRUE,
 //                result = instance.setSliderMaximumValue ();
 //        assertEquals (expResult, result);
 //    }
 
-    @Test
-    public void testInitCameraDatabase () {
-        
-        System.out.println ("initCameraDatabase");
-        GUI instance = new GUI ();
-        Boolean expResult = Boolean.TRUE,
-                result = instance.INIT_CAMERA_DATABASE ();
-        assertEquals (expResult, result);
-        
-        result = instance.setSliderMaximumValue ();
-        assertEquals (expResult, result);
-    }
+//    @Test
+//    public void testInitCameraDatabase () {
+//        
+//        System.out.println ("initCameraDatabase");
+//        LFDMS_GUI instance = new LFDMS_GUI ();
+//        Boolean expResult = Boolean.TRUE,
+//                result = instance.INIT_CAMERA_DATABASE ();
+//        assertEquals (expResult, result);
+//        
+//        result = instance.setSliderMaximumValue ();
+//        assertEquals (expResult, result);
+//    }
     
-    @Test
-    public void testInitAudioDatabase () {
-        
-        System.out.println ("initAudioDatabase");
-        GUI instance = new GUI ();
-        Boolean expResult = Boolean.TRUE,
-                result = instance.INIT_AUDIO_DATABASE ();
-        assertEquals (expResult, result);
-    }
+//    @Test
+//    public void testInitAudioDatabase () {
+//        
+//        System.out.println ("initAudioDatabase");
+//        LFDMS_GUI instance = new LFDMS_GUI ();
+//        Boolean expResult = Boolean.TRUE,
+//                result = instance.INIT_AUDIO_DATABASE ();
+//        assertEquals (expResult, result);
+//    }
     
     /**
-     * Test of recordAudioForAfewSeconds method, of class GUI.
+     * Test of recordAudioForAfewSeconds method, of class LFDMS_GUI.
      */
-    @Test
-    public void testRecordAudioForAfewSeconds () {
-        
-        System.out.println ("recordAudioForAfewSeconds");
-        GUI instance = new GUI ();
-        Boolean expResult = Boolean.TRUE,
-                result = instance.recordAudioForAfewSeconds ();
-        assertEquals (expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-//        fail ("The test case is a prototype.");
-    }
+//    @Test
+//    public void testRecordAudioForAfewSeconds () {
+//        
+//        System.out.println ("recordAudioForAfewSeconds");
+//        LFDMS_GUI instance = new LFDMS_GUI ();
+//        Boolean expResult = Boolean.TRUE,
+//        result = instance.recordAudioForAfewSeconds ();
+//        assertEquals (expResult, result);
+//        // TODO review the generated test code and remove the default call to fail.
+////        fail ("The test case is a prototype.");
+//    }
 
     /**
-     * Test of isNumeric method, of class GUI.
+     * Test of isNumeric method, of class LFDMS_GUI.
      */
     @Test
     public void testIsNumeric () {
@@ -121,12 +121,12 @@ public class GUITest {
         
         String s = "a";
         boolean expResult = false;
-        boolean result = GUI.isNumeric (s);
+        boolean result = LFDMS_GUI.isNumeric (s);
         assertEquals (expResult, result);
         
         s = "9";
         expResult = true;
-        result = GUI.isNumeric (s);
+        result = LFDMS_GUI.isNumeric (s);
         assertEquals (expResult, result);
     }
     

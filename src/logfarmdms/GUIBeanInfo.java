@@ -29,15 +29,14 @@ package logfarmdms;
 import java.beans.*;
 
 /**
- *
- * @author tuxjsmith
+ * @author tuxjsmith@gmail.com
  */
 public class GUIBeanInfo extends SimpleBeanInfo {
 
     // Bean descriptor//GEN-FIRST:BeanDescriptor
     /*lazy BeanDescriptor*/
     private static BeanDescriptor getBdescriptor(){
-        BeanDescriptor beanDescriptor = new BeanDescriptor  ( logfarmdms.GUI.class , null ); // NOI18N//GEN-HEADEREND:BeanDescriptor
+        BeanDescriptor beanDescriptor = new BeanDescriptor  ( logfarmdms.LFDMS_GUI.class , null ); // NOI18N//GEN-HEADEREND:BeanDescriptor
     // Here you can add code for customizing the BeanDescriptor.
 
         return beanDescriptor;     }//GEN-LAST:BeanDescriptor
@@ -165,120 +164,120 @@ public class GUIBeanInfo extends SimpleBeanInfo {
         PropertyDescriptor[] properties = new PropertyDescriptor[114];
     
         try {
-            properties[PROPERTY_accessibleContext] = new PropertyDescriptor ( "accessibleContext", logfarmdms.GUI.class, "getAccessibleContext", null ); // NOI18N
-            properties[PROPERTY_active] = new PropertyDescriptor ( "active", logfarmdms.GUI.class, "isActive", null ); // NOI18N
-            properties[PROPERTY_alignmentX] = new PropertyDescriptor ( "alignmentX", logfarmdms.GUI.class, "getAlignmentX", null ); // NOI18N
-            properties[PROPERTY_alignmentY] = new PropertyDescriptor ( "alignmentY", logfarmdms.GUI.class, "getAlignmentY", null ); // NOI18N
-            properties[PROPERTY_alwaysOnTop] = new PropertyDescriptor ( "alwaysOnTop", logfarmdms.GUI.class, "isAlwaysOnTop", "setAlwaysOnTop" ); // NOI18N
-            properties[PROPERTY_alwaysOnTopSupported] = new PropertyDescriptor ( "alwaysOnTopSupported", logfarmdms.GUI.class, "isAlwaysOnTopSupported", null ); // NOI18N
-            properties[PROPERTY_autoRequestFocus] = new PropertyDescriptor ( "autoRequestFocus", logfarmdms.GUI.class, "isAutoRequestFocus", "setAutoRequestFocus" ); // NOI18N
-            properties[PROPERTY_background] = new PropertyDescriptor ( "background", logfarmdms.GUI.class, "getBackground", "setBackground" ); // NOI18N
-            properties[PROPERTY_backgroundSet] = new PropertyDescriptor ( "backgroundSet", logfarmdms.GUI.class, "isBackgroundSet", null ); // NOI18N
-            properties[PROPERTY_baselineResizeBehavior] = new PropertyDescriptor ( "baselineResizeBehavior", logfarmdms.GUI.class, "getBaselineResizeBehavior", null ); // NOI18N
-            properties[PROPERTY_bounds] = new PropertyDescriptor ( "bounds", logfarmdms.GUI.class, "getBounds", "setBounds" ); // NOI18N
-            properties[PROPERTY_bufferStrategy] = new PropertyDescriptor ( "bufferStrategy", logfarmdms.GUI.class, "getBufferStrategy", null ); // NOI18N
-            properties[PROPERTY_colorModel] = new PropertyDescriptor ( "colorModel", logfarmdms.GUI.class, "getColorModel", null ); // NOI18N
-            properties[PROPERTY_component] = new IndexedPropertyDescriptor ( "component", logfarmdms.GUI.class, null, null, "getComponent", null ); // NOI18N
-            properties[PROPERTY_componentCount] = new PropertyDescriptor ( "componentCount", logfarmdms.GUI.class, "getComponentCount", null ); // NOI18N
-            properties[PROPERTY_componentListeners] = new PropertyDescriptor ( "componentListeners", logfarmdms.GUI.class, "getComponentListeners", null ); // NOI18N
-            properties[PROPERTY_componentOrientation] = new PropertyDescriptor ( "componentOrientation", logfarmdms.GUI.class, "getComponentOrientation", "setComponentOrientation" ); // NOI18N
-            properties[PROPERTY_components] = new PropertyDescriptor ( "components", logfarmdms.GUI.class, "getComponents", null ); // NOI18N
-            properties[PROPERTY_containerListeners] = new PropertyDescriptor ( "containerListeners", logfarmdms.GUI.class, "getContainerListeners", null ); // NOI18N
-            properties[PROPERTY_contentPane] = new PropertyDescriptor ( "contentPane", logfarmdms.GUI.class, "getContentPane", "setContentPane" ); // NOI18N
-            properties[PROPERTY_cursor] = new PropertyDescriptor ( "cursor", logfarmdms.GUI.class, null, "setCursor" ); // NOI18N
-            properties[PROPERTY_cursorSet] = new PropertyDescriptor ( "cursorSet", logfarmdms.GUI.class, "isCursorSet", null ); // NOI18N
-            properties[PROPERTY_cursorType] = new PropertyDescriptor ( "cursorType", logfarmdms.GUI.class, "getCursorType", null ); // NOI18N
-            properties[PROPERTY_defaultCloseOperation] = new PropertyDescriptor ( "defaultCloseOperation", logfarmdms.GUI.class, "getDefaultCloseOperation", "setDefaultCloseOperation" ); // NOI18N
-            properties[PROPERTY_displayable] = new PropertyDescriptor ( "displayable", logfarmdms.GUI.class, "isDisplayable", null ); // NOI18N
-            properties[PROPERTY_doubleBuffered] = new PropertyDescriptor ( "doubleBuffered", logfarmdms.GUI.class, "isDoubleBuffered", null ); // NOI18N
-            properties[PROPERTY_dropTarget] = new PropertyDescriptor ( "dropTarget", logfarmdms.GUI.class, "getDropTarget", "setDropTarget" ); // NOI18N
-            properties[PROPERTY_enabled] = new PropertyDescriptor ( "enabled", logfarmdms.GUI.class, "isEnabled", "setEnabled" ); // NOI18N
-            properties[PROPERTY_extendedState] = new PropertyDescriptor ( "extendedState", logfarmdms.GUI.class, "getExtendedState", "setExtendedState" ); // NOI18N
-            properties[PROPERTY_focusable] = new PropertyDescriptor ( "focusable", logfarmdms.GUI.class, "isFocusable", "setFocusable" ); // NOI18N
-            properties[PROPERTY_focusableWindow] = new PropertyDescriptor ( "focusableWindow", logfarmdms.GUI.class, "isFocusableWindow", null ); // NOI18N
-            properties[PROPERTY_focusableWindowState] = new PropertyDescriptor ( "focusableWindowState", logfarmdms.GUI.class, "getFocusableWindowState", "setFocusableWindowState" ); // NOI18N
-            properties[PROPERTY_focusCycleRoot] = new PropertyDescriptor ( "focusCycleRoot", logfarmdms.GUI.class, "isFocusCycleRoot", "setFocusCycleRoot" ); // NOI18N
-            properties[PROPERTY_focusCycleRootAncestor] = new PropertyDescriptor ( "focusCycleRootAncestor", logfarmdms.GUI.class, "getFocusCycleRootAncestor", null ); // NOI18N
-            properties[PROPERTY_focused] = new PropertyDescriptor ( "focused", logfarmdms.GUI.class, "isFocused", null ); // NOI18N
-            properties[PROPERTY_focusListeners] = new PropertyDescriptor ( "focusListeners", logfarmdms.GUI.class, "getFocusListeners", null ); // NOI18N
-            properties[PROPERTY_focusOwner] = new PropertyDescriptor ( "focusOwner", logfarmdms.GUI.class, "getFocusOwner", null ); // NOI18N
-            properties[PROPERTY_focusTraversable] = new PropertyDescriptor ( "focusTraversable", logfarmdms.GUI.class, "isFocusTraversable", null ); // NOI18N
-            properties[PROPERTY_focusTraversalKeys] = new IndexedPropertyDescriptor ( "focusTraversalKeys", logfarmdms.GUI.class, null, null, "getFocusTraversalKeys", null ); // NOI18N
-            properties[PROPERTY_focusTraversalKeysEnabled] = new PropertyDescriptor ( "focusTraversalKeysEnabled", logfarmdms.GUI.class, "getFocusTraversalKeysEnabled", "setFocusTraversalKeysEnabled" ); // NOI18N
-            properties[PROPERTY_focusTraversalPolicy] = new PropertyDescriptor ( "focusTraversalPolicy", logfarmdms.GUI.class, "getFocusTraversalPolicy", "setFocusTraversalPolicy" ); // NOI18N
-            properties[PROPERTY_focusTraversalPolicyProvider] = new PropertyDescriptor ( "focusTraversalPolicyProvider", logfarmdms.GUI.class, "isFocusTraversalPolicyProvider", "setFocusTraversalPolicyProvider" ); // NOI18N
-            properties[PROPERTY_focusTraversalPolicySet] = new PropertyDescriptor ( "focusTraversalPolicySet", logfarmdms.GUI.class, "isFocusTraversalPolicySet", null ); // NOI18N
-            properties[PROPERTY_font] = new PropertyDescriptor ( "font", logfarmdms.GUI.class, "getFont", "setFont" ); // NOI18N
-            properties[PROPERTY_fontSet] = new PropertyDescriptor ( "fontSet", logfarmdms.GUI.class, "isFontSet", null ); // NOI18N
-            properties[PROPERTY_foreground] = new PropertyDescriptor ( "foreground", logfarmdms.GUI.class, "getForeground", "setForeground" ); // NOI18N
-            properties[PROPERTY_foregroundSet] = new PropertyDescriptor ( "foregroundSet", logfarmdms.GUI.class, "isForegroundSet", null ); // NOI18N
-            properties[PROPERTY_glassPane] = new PropertyDescriptor ( "glassPane", logfarmdms.GUI.class, "getGlassPane", "setGlassPane" ); // NOI18N
-            properties[PROPERTY_graphics] = new PropertyDescriptor ( "graphics", logfarmdms.GUI.class, "getGraphics", null ); // NOI18N
-            properties[PROPERTY_graphicsConfiguration] = new PropertyDescriptor ( "graphicsConfiguration", logfarmdms.GUI.class, "getGraphicsConfiguration", null ); // NOI18N
-            properties[PROPERTY_height] = new PropertyDescriptor ( "height", logfarmdms.GUI.class, "getHeight", null ); // NOI18N
-            properties[PROPERTY_hierarchyBoundsListeners] = new PropertyDescriptor ( "hierarchyBoundsListeners", logfarmdms.GUI.class, "getHierarchyBoundsListeners", null ); // NOI18N
-            properties[PROPERTY_hierarchyListeners] = new PropertyDescriptor ( "hierarchyListeners", logfarmdms.GUI.class, "getHierarchyListeners", null ); // NOI18N
-            properties[PROPERTY_iconImage] = new PropertyDescriptor ( "iconImage", logfarmdms.GUI.class, "getIconImage", "setIconImage" ); // NOI18N
-            properties[PROPERTY_iconImages] = new PropertyDescriptor ( "iconImages", logfarmdms.GUI.class, null, "setIconImages" ); // NOI18N
-            properties[PROPERTY_ignoreRepaint] = new PropertyDescriptor ( "ignoreRepaint", logfarmdms.GUI.class, "getIgnoreRepaint", "setIgnoreRepaint" ); // NOI18N
-            properties[PROPERTY_inputContext] = new PropertyDescriptor ( "inputContext", logfarmdms.GUI.class, "getInputContext", null ); // NOI18N
-            properties[PROPERTY_inputMethodListeners] = new PropertyDescriptor ( "inputMethodListeners", logfarmdms.GUI.class, "getInputMethodListeners", null ); // NOI18N
-            properties[PROPERTY_inputMethodRequests] = new PropertyDescriptor ( "inputMethodRequests", logfarmdms.GUI.class, "getInputMethodRequests", null ); // NOI18N
-            properties[PROPERTY_insets] = new PropertyDescriptor ( "insets", logfarmdms.GUI.class, "getInsets", null ); // NOI18N
-            properties[PROPERTY_JMenuBar] = new PropertyDescriptor ( "JMenuBar", logfarmdms.GUI.class, "getJMenuBar", "setJMenuBar" ); // NOI18N
-            properties[PROPERTY_keyListeners] = new PropertyDescriptor ( "keyListeners", logfarmdms.GUI.class, "getKeyListeners", null ); // NOI18N
-            properties[PROPERTY_layeredPane] = new PropertyDescriptor ( "layeredPane", logfarmdms.GUI.class, "getLayeredPane", "setLayeredPane" ); // NOI18N
-            properties[PROPERTY_layout] = new PropertyDescriptor ( "layout", logfarmdms.GUI.class, "getLayout", "setLayout" ); // NOI18N
-            properties[PROPERTY_lightweight] = new PropertyDescriptor ( "lightweight", logfarmdms.GUI.class, "isLightweight", null ); // NOI18N
-            properties[PROPERTY_locale] = new PropertyDescriptor ( "locale", logfarmdms.GUI.class, "getLocale", "setLocale" ); // NOI18N
-            properties[PROPERTY_location] = new PropertyDescriptor ( "location", logfarmdms.GUI.class, "getLocation", "setLocation" ); // NOI18N
-            properties[PROPERTY_locationByPlatform] = new PropertyDescriptor ( "locationByPlatform", logfarmdms.GUI.class, "isLocationByPlatform", "setLocationByPlatform" ); // NOI18N
-            properties[PROPERTY_locationOnScreen] = new PropertyDescriptor ( "locationOnScreen", logfarmdms.GUI.class, "getLocationOnScreen", null ); // NOI18N
-            properties[PROPERTY_locationRelativeTo] = new PropertyDescriptor ( "locationRelativeTo", logfarmdms.GUI.class, null, "setLocationRelativeTo" ); // NOI18N
-            properties[PROPERTY_maximizedBounds] = new PropertyDescriptor ( "maximizedBounds", logfarmdms.GUI.class, "getMaximizedBounds", "setMaximizedBounds" ); // NOI18N
-            properties[PROPERTY_maximumSize] = new PropertyDescriptor ( "maximumSize", logfarmdms.GUI.class, "getMaximumSize", "setMaximumSize" ); // NOI18N
-            properties[PROPERTY_maximumSizeSet] = new PropertyDescriptor ( "maximumSizeSet", logfarmdms.GUI.class, "isMaximumSizeSet", null ); // NOI18N
-            properties[PROPERTY_menuBar] = new PropertyDescriptor ( "menuBar", logfarmdms.GUI.class, "getMenuBar", "setMenuBar" ); // NOI18N
-            properties[PROPERTY_minimumSize] = new PropertyDescriptor ( "minimumSize", logfarmdms.GUI.class, "getMinimumSize", "setMinimumSize" ); // NOI18N
-            properties[PROPERTY_minimumSizeSet] = new PropertyDescriptor ( "minimumSizeSet", logfarmdms.GUI.class, "isMinimumSizeSet", null ); // NOI18N
-            properties[PROPERTY_modalExclusionType] = new PropertyDescriptor ( "modalExclusionType", logfarmdms.GUI.class, "getModalExclusionType", "setModalExclusionType" ); // NOI18N
-            properties[PROPERTY_mostRecentFocusOwner] = new PropertyDescriptor ( "mostRecentFocusOwner", logfarmdms.GUI.class, "getMostRecentFocusOwner", null ); // NOI18N
-            properties[PROPERTY_mouseListeners] = new PropertyDescriptor ( "mouseListeners", logfarmdms.GUI.class, "getMouseListeners", null ); // NOI18N
-            properties[PROPERTY_mouseMotionListeners] = new PropertyDescriptor ( "mouseMotionListeners", logfarmdms.GUI.class, "getMouseMotionListeners", null ); // NOI18N
-            properties[PROPERTY_mousePosition] = new PropertyDescriptor ( "mousePosition", logfarmdms.GUI.class, "getMousePosition", null ); // NOI18N
-            properties[PROPERTY_mouseWheelListeners] = new PropertyDescriptor ( "mouseWheelListeners", logfarmdms.GUI.class, "getMouseWheelListeners", null ); // NOI18N
-            properties[PROPERTY_name] = new PropertyDescriptor ( "name", logfarmdms.GUI.class, "getName", "setName" ); // NOI18N
-            properties[PROPERTY_opacity] = new PropertyDescriptor ( "opacity", logfarmdms.GUI.class, "getOpacity", "setOpacity" ); // NOI18N
-            properties[PROPERTY_opaque] = new PropertyDescriptor ( "opaque", logfarmdms.GUI.class, "isOpaque", null ); // NOI18N
-            properties[PROPERTY_ownedWindows] = new PropertyDescriptor ( "ownedWindows", logfarmdms.GUI.class, "getOwnedWindows", null ); // NOI18N
-            properties[PROPERTY_owner] = new PropertyDescriptor ( "owner", logfarmdms.GUI.class, "getOwner", null ); // NOI18N
-            properties[PROPERTY_parent] = new PropertyDescriptor ( "parent", logfarmdms.GUI.class, "getParent", null ); // NOI18N
-            properties[PROPERTY_peer] = new PropertyDescriptor ( "peer", logfarmdms.GUI.class, "getPeer", null ); // NOI18N
-            properties[PROPERTY_preferredSize] = new PropertyDescriptor ( "preferredSize", logfarmdms.GUI.class, "getPreferredSize", "setPreferredSize" ); // NOI18N
-            properties[PROPERTY_preferredSizeSet] = new PropertyDescriptor ( "preferredSizeSet", logfarmdms.GUI.class, "isPreferredSizeSet", null ); // NOI18N
-            properties[PROPERTY_propertyChangeListeners] = new PropertyDescriptor ( "propertyChangeListeners", logfarmdms.GUI.class, "getPropertyChangeListeners", null ); // NOI18N
-            properties[PROPERTY_resizable] = new PropertyDescriptor ( "resizable", logfarmdms.GUI.class, "isResizable", "setResizable" ); // NOI18N
-            properties[PROPERTY_rootPane] = new PropertyDescriptor ( "rootPane", logfarmdms.GUI.class, "getRootPane", null ); // NOI18N
-            properties[PROPERTY_shape] = new PropertyDescriptor ( "shape", logfarmdms.GUI.class, "getShape", "setShape" ); // NOI18N
-            properties[PROPERTY_showing] = new PropertyDescriptor ( "showing", logfarmdms.GUI.class, "isShowing", null ); // NOI18N
-            properties[PROPERTY_size] = new PropertyDescriptor ( "size", logfarmdms.GUI.class, "getSize", "setSize" ); // NOI18N
-            properties[PROPERTY_state] = new PropertyDescriptor ( "state", logfarmdms.GUI.class, "getState", "setState" ); // NOI18N
-            properties[PROPERTY_title] = new PropertyDescriptor ( "title", logfarmdms.GUI.class, "getTitle", "setTitle" ); // NOI18N
-            properties[PROPERTY_toolkit] = new PropertyDescriptor ( "toolkit", logfarmdms.GUI.class, "getToolkit", null ); // NOI18N
-            properties[PROPERTY_transferHandler] = new PropertyDescriptor ( "transferHandler", logfarmdms.GUI.class, "getTransferHandler", "setTransferHandler" ); // NOI18N
-            properties[PROPERTY_treeLock] = new PropertyDescriptor ( "treeLock", logfarmdms.GUI.class, "getTreeLock", null ); // NOI18N
-            properties[PROPERTY_type] = new PropertyDescriptor ( "type", logfarmdms.GUI.class, "getType", "setType" ); // NOI18N
-            properties[PROPERTY_undecorated] = new PropertyDescriptor ( "undecorated", logfarmdms.GUI.class, "isUndecorated", "setUndecorated" ); // NOI18N
-            properties[PROPERTY_valid] = new PropertyDescriptor ( "valid", logfarmdms.GUI.class, "isValid", null ); // NOI18N
-            properties[PROPERTY_validateRoot] = new PropertyDescriptor ( "validateRoot", logfarmdms.GUI.class, "isValidateRoot", null ); // NOI18N
-            properties[PROPERTY_visible] = new PropertyDescriptor ( "visible", logfarmdms.GUI.class, "isVisible", "setVisible" ); // NOI18N
-            properties[PROPERTY_warningString] = new PropertyDescriptor ( "warningString", logfarmdms.GUI.class, "getWarningString", null ); // NOI18N
-            properties[PROPERTY_width] = new PropertyDescriptor ( "width", logfarmdms.GUI.class, "getWidth", null ); // NOI18N
-            properties[PROPERTY_windowFocusListeners] = new PropertyDescriptor ( "windowFocusListeners", logfarmdms.GUI.class, "getWindowFocusListeners", null ); // NOI18N
-            properties[PROPERTY_windowListeners] = new PropertyDescriptor ( "windowListeners", logfarmdms.GUI.class, "getWindowListeners", null ); // NOI18N
-            properties[PROPERTY_windowStateListeners] = new PropertyDescriptor ( "windowStateListeners", logfarmdms.GUI.class, "getWindowStateListeners", null ); // NOI18N
-            properties[PROPERTY_x] = new PropertyDescriptor ( "x", logfarmdms.GUI.class, "getX", null ); // NOI18N
-            properties[PROPERTY_y] = new PropertyDescriptor ( "y", logfarmdms.GUI.class, "getY", null ); // NOI18N
+            properties[PROPERTY_accessibleContext] = new PropertyDescriptor ( "accessibleContext", logfarmdms.LFDMS_GUI.class, "getAccessibleContext", null ); // NOI18N
+            properties[PROPERTY_active] = new PropertyDescriptor ( "active", logfarmdms.LFDMS_GUI.class, "isActive", null ); // NOI18N
+            properties[PROPERTY_alignmentX] = new PropertyDescriptor ( "alignmentX", logfarmdms.LFDMS_GUI.class, "getAlignmentX", null ); // NOI18N
+            properties[PROPERTY_alignmentY] = new PropertyDescriptor ( "alignmentY", logfarmdms.LFDMS_GUI.class, "getAlignmentY", null ); // NOI18N
+            properties[PROPERTY_alwaysOnTop] = new PropertyDescriptor ( "alwaysOnTop", logfarmdms.LFDMS_GUI.class, "isAlwaysOnTop", "setAlwaysOnTop" ); // NOI18N
+            properties[PROPERTY_alwaysOnTopSupported] = new PropertyDescriptor ( "alwaysOnTopSupported", logfarmdms.LFDMS_GUI.class, "isAlwaysOnTopSupported", null ); // NOI18N
+            properties[PROPERTY_autoRequestFocus] = new PropertyDescriptor ( "autoRequestFocus", logfarmdms.LFDMS_GUI.class, "isAutoRequestFocus", "setAutoRequestFocus" ); // NOI18N
+            properties[PROPERTY_background] = new PropertyDescriptor ( "background", logfarmdms.LFDMS_GUI.class, "getBackground", "setBackground" ); // NOI18N
+            properties[PROPERTY_backgroundSet] = new PropertyDescriptor ( "backgroundSet", logfarmdms.LFDMS_GUI.class, "isBackgroundSet", null ); // NOI18N
+            properties[PROPERTY_baselineResizeBehavior] = new PropertyDescriptor ( "baselineResizeBehavior", logfarmdms.LFDMS_GUI.class, "getBaselineResizeBehavior", null ); // NOI18N
+            properties[PROPERTY_bounds] = new PropertyDescriptor ( "bounds", logfarmdms.LFDMS_GUI.class, "getBounds", "setBounds" ); // NOI18N
+            properties[PROPERTY_bufferStrategy] = new PropertyDescriptor ( "bufferStrategy", logfarmdms.LFDMS_GUI.class, "getBufferStrategy", null ); // NOI18N
+            properties[PROPERTY_colorModel] = new PropertyDescriptor ( "colorModel", logfarmdms.LFDMS_GUI.class, "getColorModel", null ); // NOI18N
+            properties[PROPERTY_component] = new IndexedPropertyDescriptor ( "component", logfarmdms.LFDMS_GUI.class, null, null, "getComponent", null ); // NOI18N
+            properties[PROPERTY_componentCount] = new PropertyDescriptor ( "componentCount", logfarmdms.LFDMS_GUI.class, "getComponentCount", null ); // NOI18N
+            properties[PROPERTY_componentListeners] = new PropertyDescriptor ( "componentListeners", logfarmdms.LFDMS_GUI.class, "getComponentListeners", null ); // NOI18N
+            properties[PROPERTY_componentOrientation] = new PropertyDescriptor ( "componentOrientation", logfarmdms.LFDMS_GUI.class, "getComponentOrientation", "setComponentOrientation" ); // NOI18N
+            properties[PROPERTY_components] = new PropertyDescriptor ( "components", logfarmdms.LFDMS_GUI.class, "getComponents", null ); // NOI18N
+            properties[PROPERTY_containerListeners] = new PropertyDescriptor ( "containerListeners", logfarmdms.LFDMS_GUI.class, "getContainerListeners", null ); // NOI18N
+            properties[PROPERTY_contentPane] = new PropertyDescriptor ( "contentPane", logfarmdms.LFDMS_GUI.class, "getContentPane", "setContentPane" ); // NOI18N
+            properties[PROPERTY_cursor] = new PropertyDescriptor ( "cursor", logfarmdms.LFDMS_GUI.class, null, "setCursor" ); // NOI18N
+            properties[PROPERTY_cursorSet] = new PropertyDescriptor ( "cursorSet", logfarmdms.LFDMS_GUI.class, "isCursorSet", null ); // NOI18N
+            properties[PROPERTY_cursorType] = new PropertyDescriptor ( "cursorType", logfarmdms.LFDMS_GUI.class, "getCursorType", null ); // NOI18N
+            properties[PROPERTY_defaultCloseOperation] = new PropertyDescriptor ( "defaultCloseOperation", logfarmdms.LFDMS_GUI.class, "getDefaultCloseOperation", "setDefaultCloseOperation" ); // NOI18N
+            properties[PROPERTY_displayable] = new PropertyDescriptor ( "displayable", logfarmdms.LFDMS_GUI.class, "isDisplayable", null ); // NOI18N
+            properties[PROPERTY_doubleBuffered] = new PropertyDescriptor ( "doubleBuffered", logfarmdms.LFDMS_GUI.class, "isDoubleBuffered", null ); // NOI18N
+            properties[PROPERTY_dropTarget] = new PropertyDescriptor ( "dropTarget", logfarmdms.LFDMS_GUI.class, "getDropTarget", "setDropTarget" ); // NOI18N
+            properties[PROPERTY_enabled] = new PropertyDescriptor ( "enabled", logfarmdms.LFDMS_GUI.class, "isEnabled", "setEnabled" ); // NOI18N
+            properties[PROPERTY_extendedState] = new PropertyDescriptor ( "extendedState", logfarmdms.LFDMS_GUI.class, "getExtendedState", "setExtendedState" ); // NOI18N
+            properties[PROPERTY_focusable] = new PropertyDescriptor ( "focusable", logfarmdms.LFDMS_GUI.class, "isFocusable", "setFocusable" ); // NOI18N
+            properties[PROPERTY_focusableWindow] = new PropertyDescriptor ( "focusableWindow", logfarmdms.LFDMS_GUI.class, "isFocusableWindow", null ); // NOI18N
+            properties[PROPERTY_focusableWindowState] = new PropertyDescriptor ( "focusableWindowState", logfarmdms.LFDMS_GUI.class, "getFocusableWindowState", "setFocusableWindowState" ); // NOI18N
+            properties[PROPERTY_focusCycleRoot] = new PropertyDescriptor ( "focusCycleRoot", logfarmdms.LFDMS_GUI.class, "isFocusCycleRoot", "setFocusCycleRoot" ); // NOI18N
+            properties[PROPERTY_focusCycleRootAncestor] = new PropertyDescriptor ( "focusCycleRootAncestor", logfarmdms.LFDMS_GUI.class, "getFocusCycleRootAncestor", null ); // NOI18N
+            properties[PROPERTY_focused] = new PropertyDescriptor ( "focused", logfarmdms.LFDMS_GUI.class, "isFocused", null ); // NOI18N
+            properties[PROPERTY_focusListeners] = new PropertyDescriptor ( "focusListeners", logfarmdms.LFDMS_GUI.class, "getFocusListeners", null ); // NOI18N
+            properties[PROPERTY_focusOwner] = new PropertyDescriptor ( "focusOwner", logfarmdms.LFDMS_GUI.class, "getFocusOwner", null ); // NOI18N
+            properties[PROPERTY_focusTraversable] = new PropertyDescriptor ( "focusTraversable", logfarmdms.LFDMS_GUI.class, "isFocusTraversable", null ); // NOI18N
+            properties[PROPERTY_focusTraversalKeys] = new IndexedPropertyDescriptor ( "focusTraversalKeys", logfarmdms.LFDMS_GUI.class, null, null, "getFocusTraversalKeys", null ); // NOI18N
+            properties[PROPERTY_focusTraversalKeysEnabled] = new PropertyDescriptor ( "focusTraversalKeysEnabled", logfarmdms.LFDMS_GUI.class, "getFocusTraversalKeysEnabled", "setFocusTraversalKeysEnabled" ); // NOI18N
+            properties[PROPERTY_focusTraversalPolicy] = new PropertyDescriptor ( "focusTraversalPolicy", logfarmdms.LFDMS_GUI.class, "getFocusTraversalPolicy", "setFocusTraversalPolicy" ); // NOI18N
+            properties[PROPERTY_focusTraversalPolicyProvider] = new PropertyDescriptor ( "focusTraversalPolicyProvider", logfarmdms.LFDMS_GUI.class, "isFocusTraversalPolicyProvider", "setFocusTraversalPolicyProvider" ); // NOI18N
+            properties[PROPERTY_focusTraversalPolicySet] = new PropertyDescriptor ( "focusTraversalPolicySet", logfarmdms.LFDMS_GUI.class, "isFocusTraversalPolicySet", null ); // NOI18N
+            properties[PROPERTY_font] = new PropertyDescriptor ( "font", logfarmdms.LFDMS_GUI.class, "getFont", "setFont" ); // NOI18N
+            properties[PROPERTY_fontSet] = new PropertyDescriptor ( "fontSet", logfarmdms.LFDMS_GUI.class, "isFontSet", null ); // NOI18N
+            properties[PROPERTY_foreground] = new PropertyDescriptor ( "foreground", logfarmdms.LFDMS_GUI.class, "getForeground", "setForeground" ); // NOI18N
+            properties[PROPERTY_foregroundSet] = new PropertyDescriptor ( "foregroundSet", logfarmdms.LFDMS_GUI.class, "isForegroundSet", null ); // NOI18N
+            properties[PROPERTY_glassPane] = new PropertyDescriptor ( "glassPane", logfarmdms.LFDMS_GUI.class, "getGlassPane", "setGlassPane" ); // NOI18N
+            properties[PROPERTY_graphics] = new PropertyDescriptor ( "graphics", logfarmdms.LFDMS_GUI.class, "getGraphics", null ); // NOI18N
+            properties[PROPERTY_graphicsConfiguration] = new PropertyDescriptor ( "graphicsConfiguration", logfarmdms.LFDMS_GUI.class, "getGraphicsConfiguration", null ); // NOI18N
+            properties[PROPERTY_height] = new PropertyDescriptor ( "height", logfarmdms.LFDMS_GUI.class, "getHeight", null ); // NOI18N
+            properties[PROPERTY_hierarchyBoundsListeners] = new PropertyDescriptor ( "hierarchyBoundsListeners", logfarmdms.LFDMS_GUI.class, "getHierarchyBoundsListeners", null ); // NOI18N
+            properties[PROPERTY_hierarchyListeners] = new PropertyDescriptor ( "hierarchyListeners", logfarmdms.LFDMS_GUI.class, "getHierarchyListeners", null ); // NOI18N
+            properties[PROPERTY_iconImage] = new PropertyDescriptor ( "iconImage", logfarmdms.LFDMS_GUI.class, "getIconImage", "setIconImage" ); // NOI18N
+            properties[PROPERTY_iconImages] = new PropertyDescriptor ( "iconImages", logfarmdms.LFDMS_GUI.class, null, "setIconImages" ); // NOI18N
+            properties[PROPERTY_ignoreRepaint] = new PropertyDescriptor ( "ignoreRepaint", logfarmdms.LFDMS_GUI.class, "getIgnoreRepaint", "setIgnoreRepaint" ); // NOI18N
+            properties[PROPERTY_inputContext] = new PropertyDescriptor ( "inputContext", logfarmdms.LFDMS_GUI.class, "getInputContext", null ); // NOI18N
+            properties[PROPERTY_inputMethodListeners] = new PropertyDescriptor ( "inputMethodListeners", logfarmdms.LFDMS_GUI.class, "getInputMethodListeners", null ); // NOI18N
+            properties[PROPERTY_inputMethodRequests] = new PropertyDescriptor ( "inputMethodRequests", logfarmdms.LFDMS_GUI.class, "getInputMethodRequests", null ); // NOI18N
+            properties[PROPERTY_insets] = new PropertyDescriptor ( "insets", logfarmdms.LFDMS_GUI.class, "getInsets", null ); // NOI18N
+            properties[PROPERTY_JMenuBar] = new PropertyDescriptor ( "JMenuBar", logfarmdms.LFDMS_GUI.class, "getJMenuBar", "setJMenuBar" ); // NOI18N
+            properties[PROPERTY_keyListeners] = new PropertyDescriptor ( "keyListeners", logfarmdms.LFDMS_GUI.class, "getKeyListeners", null ); // NOI18N
+            properties[PROPERTY_layeredPane] = new PropertyDescriptor ( "layeredPane", logfarmdms.LFDMS_GUI.class, "getLayeredPane", "setLayeredPane" ); // NOI18N
+            properties[PROPERTY_layout] = new PropertyDescriptor ( "layout", logfarmdms.LFDMS_GUI.class, "getLayout", "setLayout" ); // NOI18N
+            properties[PROPERTY_lightweight] = new PropertyDescriptor ( "lightweight", logfarmdms.LFDMS_GUI.class, "isLightweight", null ); // NOI18N
+            properties[PROPERTY_locale] = new PropertyDescriptor ( "locale", logfarmdms.LFDMS_GUI.class, "getLocale", "setLocale" ); // NOI18N
+            properties[PROPERTY_location] = new PropertyDescriptor ( "location", logfarmdms.LFDMS_GUI.class, "getLocation", "setLocation" ); // NOI18N
+            properties[PROPERTY_locationByPlatform] = new PropertyDescriptor ( "locationByPlatform", logfarmdms.LFDMS_GUI.class, "isLocationByPlatform", "setLocationByPlatform" ); // NOI18N
+            properties[PROPERTY_locationOnScreen] = new PropertyDescriptor ( "locationOnScreen", logfarmdms.LFDMS_GUI.class, "getLocationOnScreen", null ); // NOI18N
+            properties[PROPERTY_locationRelativeTo] = new PropertyDescriptor ( "locationRelativeTo", logfarmdms.LFDMS_GUI.class, null, "setLocationRelativeTo" ); // NOI18N
+            properties[PROPERTY_maximizedBounds] = new PropertyDescriptor ( "maximizedBounds", logfarmdms.LFDMS_GUI.class, "getMaximizedBounds", "setMaximizedBounds" ); // NOI18N
+            properties[PROPERTY_maximumSize] = new PropertyDescriptor ( "maximumSize", logfarmdms.LFDMS_GUI.class, "getMaximumSize", "setMaximumSize" ); // NOI18N
+            properties[PROPERTY_maximumSizeSet] = new PropertyDescriptor ( "maximumSizeSet", logfarmdms.LFDMS_GUI.class, "isMaximumSizeSet", null ); // NOI18N
+            properties[PROPERTY_menuBar] = new PropertyDescriptor ( "menuBar", logfarmdms.LFDMS_GUI.class, "getMenuBar", "setMenuBar" ); // NOI18N
+            properties[PROPERTY_minimumSize] = new PropertyDescriptor ( "minimumSize", logfarmdms.LFDMS_GUI.class, "getMinimumSize", "setMinimumSize" ); // NOI18N
+            properties[PROPERTY_minimumSizeSet] = new PropertyDescriptor ( "minimumSizeSet", logfarmdms.LFDMS_GUI.class, "isMinimumSizeSet", null ); // NOI18N
+            properties[PROPERTY_modalExclusionType] = new PropertyDescriptor ( "modalExclusionType", logfarmdms.LFDMS_GUI.class, "getModalExclusionType", "setModalExclusionType" ); // NOI18N
+            properties[PROPERTY_mostRecentFocusOwner] = new PropertyDescriptor ( "mostRecentFocusOwner", logfarmdms.LFDMS_GUI.class, "getMostRecentFocusOwner", null ); // NOI18N
+            properties[PROPERTY_mouseListeners] = new PropertyDescriptor ( "mouseListeners", logfarmdms.LFDMS_GUI.class, "getMouseListeners", null ); // NOI18N
+            properties[PROPERTY_mouseMotionListeners] = new PropertyDescriptor ( "mouseMotionListeners", logfarmdms.LFDMS_GUI.class, "getMouseMotionListeners", null ); // NOI18N
+            properties[PROPERTY_mousePosition] = new PropertyDescriptor ( "mousePosition", logfarmdms.LFDMS_GUI.class, "getMousePosition", null ); // NOI18N
+            properties[PROPERTY_mouseWheelListeners] = new PropertyDescriptor ( "mouseWheelListeners", logfarmdms.LFDMS_GUI.class, "getMouseWheelListeners", null ); // NOI18N
+            properties[PROPERTY_name] = new PropertyDescriptor ( "name", logfarmdms.LFDMS_GUI.class, "getName", "setName" ); // NOI18N
+            properties[PROPERTY_opacity] = new PropertyDescriptor ( "opacity", logfarmdms.LFDMS_GUI.class, "getOpacity", "setOpacity" ); // NOI18N
+            properties[PROPERTY_opaque] = new PropertyDescriptor ( "opaque", logfarmdms.LFDMS_GUI.class, "isOpaque", null ); // NOI18N
+            properties[PROPERTY_ownedWindows] = new PropertyDescriptor ( "ownedWindows", logfarmdms.LFDMS_GUI.class, "getOwnedWindows", null ); // NOI18N
+            properties[PROPERTY_owner] = new PropertyDescriptor ( "owner", logfarmdms.LFDMS_GUI.class, "getOwner", null ); // NOI18N
+            properties[PROPERTY_parent] = new PropertyDescriptor ( "parent", logfarmdms.LFDMS_GUI.class, "getParent", null ); // NOI18N
+            properties[PROPERTY_peer] = new PropertyDescriptor ( "peer", logfarmdms.LFDMS_GUI.class, "getPeer", null ); // NOI18N
+            properties[PROPERTY_preferredSize] = new PropertyDescriptor ( "preferredSize", logfarmdms.LFDMS_GUI.class, "getPreferredSize", "setPreferredSize" ); // NOI18N
+            properties[PROPERTY_preferredSizeSet] = new PropertyDescriptor ( "preferredSizeSet", logfarmdms.LFDMS_GUI.class, "isPreferredSizeSet", null ); // NOI18N
+            properties[PROPERTY_propertyChangeListeners] = new PropertyDescriptor ( "propertyChangeListeners", logfarmdms.LFDMS_GUI.class, "getPropertyChangeListeners", null ); // NOI18N
+            properties[PROPERTY_resizable] = new PropertyDescriptor ( "resizable", logfarmdms.LFDMS_GUI.class, "isResizable", "setResizable" ); // NOI18N
+            properties[PROPERTY_rootPane] = new PropertyDescriptor ( "rootPane", logfarmdms.LFDMS_GUI.class, "getRootPane", null ); // NOI18N
+            properties[PROPERTY_shape] = new PropertyDescriptor ( "shape", logfarmdms.LFDMS_GUI.class, "getShape", "setShape" ); // NOI18N
+            properties[PROPERTY_showing] = new PropertyDescriptor ( "showing", logfarmdms.LFDMS_GUI.class, "isShowing", null ); // NOI18N
+            properties[PROPERTY_size] = new PropertyDescriptor ( "size", logfarmdms.LFDMS_GUI.class, "getSize", "setSize" ); // NOI18N
+            properties[PROPERTY_state] = new PropertyDescriptor ( "state", logfarmdms.LFDMS_GUI.class, "getState", "setState" ); // NOI18N
+            properties[PROPERTY_title] = new PropertyDescriptor ( "title", logfarmdms.LFDMS_GUI.class, "getTitle", "setTitle" ); // NOI18N
+            properties[PROPERTY_toolkit] = new PropertyDescriptor ( "toolkit", logfarmdms.LFDMS_GUI.class, "getToolkit", null ); // NOI18N
+            properties[PROPERTY_transferHandler] = new PropertyDescriptor ( "transferHandler", logfarmdms.LFDMS_GUI.class, "getTransferHandler", "setTransferHandler" ); // NOI18N
+            properties[PROPERTY_treeLock] = new PropertyDescriptor ( "treeLock", logfarmdms.LFDMS_GUI.class, "getTreeLock", null ); // NOI18N
+            properties[PROPERTY_type] = new PropertyDescriptor ( "type", logfarmdms.LFDMS_GUI.class, "getType", "setType" ); // NOI18N
+            properties[PROPERTY_undecorated] = new PropertyDescriptor ( "undecorated", logfarmdms.LFDMS_GUI.class, "isUndecorated", "setUndecorated" ); // NOI18N
+            properties[PROPERTY_valid] = new PropertyDescriptor ( "valid", logfarmdms.LFDMS_GUI.class, "isValid", null ); // NOI18N
+            properties[PROPERTY_validateRoot] = new PropertyDescriptor ( "validateRoot", logfarmdms.LFDMS_GUI.class, "isValidateRoot", null ); // NOI18N
+            properties[PROPERTY_visible] = new PropertyDescriptor ( "visible", logfarmdms.LFDMS_GUI.class, "isVisible", "setVisible" ); // NOI18N
+            properties[PROPERTY_warningString] = new PropertyDescriptor ( "warningString", logfarmdms.LFDMS_GUI.class, "getWarningString", null ); // NOI18N
+            properties[PROPERTY_width] = new PropertyDescriptor ( "width", logfarmdms.LFDMS_GUI.class, "getWidth", null ); // NOI18N
+            properties[PROPERTY_windowFocusListeners] = new PropertyDescriptor ( "windowFocusListeners", logfarmdms.LFDMS_GUI.class, "getWindowFocusListeners", null ); // NOI18N
+            properties[PROPERTY_windowListeners] = new PropertyDescriptor ( "windowListeners", logfarmdms.LFDMS_GUI.class, "getWindowListeners", null ); // NOI18N
+            properties[PROPERTY_windowStateListeners] = new PropertyDescriptor ( "windowStateListeners", logfarmdms.LFDMS_GUI.class, "getWindowStateListeners", null ); // NOI18N
+            properties[PROPERTY_x] = new PropertyDescriptor ( "x", logfarmdms.LFDMS_GUI.class, "getX", null ); // NOI18N
+            properties[PROPERTY_y] = new PropertyDescriptor ( "y", logfarmdms.LFDMS_GUI.class, "getY", null ); // NOI18N
         }
         catch(IntrospectionException e) {
             e.printStackTrace();
@@ -309,20 +308,20 @@ public class GUIBeanInfo extends SimpleBeanInfo {
         EventSetDescriptor[] eventSets = new EventSetDescriptor[14];
     
         try {
-            eventSets[EVENT_componentListener] = new EventSetDescriptor ( logfarmdms.GUI.class, "componentListener", java.awt.event.ComponentListener.class, new String[] {"componentResized", "componentMoved", "componentShown", "componentHidden"}, "addComponentListener", "removeComponentListener" ); // NOI18N
-            eventSets[EVENT_containerListener] = new EventSetDescriptor ( logfarmdms.GUI.class, "containerListener", java.awt.event.ContainerListener.class, new String[] {"componentAdded", "componentRemoved"}, "addContainerListener", "removeContainerListener" ); // NOI18N
-            eventSets[EVENT_focusListener] = new EventSetDescriptor ( logfarmdms.GUI.class, "focusListener", java.awt.event.FocusListener.class, new String[] {"focusGained", "focusLost"}, "addFocusListener", "removeFocusListener" ); // NOI18N
-            eventSets[EVENT_hierarchyBoundsListener] = new EventSetDescriptor ( logfarmdms.GUI.class, "hierarchyBoundsListener", java.awt.event.HierarchyBoundsListener.class, new String[] {"ancestorMoved", "ancestorResized"}, "addHierarchyBoundsListener", "removeHierarchyBoundsListener" ); // NOI18N
-            eventSets[EVENT_hierarchyListener] = new EventSetDescriptor ( logfarmdms.GUI.class, "hierarchyListener", java.awt.event.HierarchyListener.class, new String[] {"hierarchyChanged"}, "addHierarchyListener", "removeHierarchyListener" ); // NOI18N
-            eventSets[EVENT_inputMethodListener] = new EventSetDescriptor ( logfarmdms.GUI.class, "inputMethodListener", java.awt.event.InputMethodListener.class, new String[] {"inputMethodTextChanged", "caretPositionChanged"}, "addInputMethodListener", "removeInputMethodListener" ); // NOI18N
-            eventSets[EVENT_keyListener] = new EventSetDescriptor ( logfarmdms.GUI.class, "keyListener", java.awt.event.KeyListener.class, new String[] {"keyTyped", "keyPressed", "keyReleased"}, "addKeyListener", "removeKeyListener" ); // NOI18N
-            eventSets[EVENT_mouseListener] = new EventSetDescriptor ( logfarmdms.GUI.class, "mouseListener", java.awt.event.MouseListener.class, new String[] {"mouseClicked", "mousePressed", "mouseReleased", "mouseEntered", "mouseExited"}, "addMouseListener", "removeMouseListener" ); // NOI18N
-            eventSets[EVENT_mouseMotionListener] = new EventSetDescriptor ( logfarmdms.GUI.class, "mouseMotionListener", java.awt.event.MouseMotionListener.class, new String[] {"mouseDragged", "mouseMoved"}, "addMouseMotionListener", "removeMouseMotionListener" ); // NOI18N
-            eventSets[EVENT_mouseWheelListener] = new EventSetDescriptor ( logfarmdms.GUI.class, "mouseWheelListener", java.awt.event.MouseWheelListener.class, new String[] {"mouseWheelMoved"}, "addMouseWheelListener", "removeMouseWheelListener" ); // NOI18N
-            eventSets[EVENT_propertyChangeListener] = new EventSetDescriptor ( logfarmdms.GUI.class, "propertyChangeListener", java.beans.PropertyChangeListener.class, new String[] {"propertyChange"}, "addPropertyChangeListener", "removePropertyChangeListener" ); // NOI18N
-            eventSets[EVENT_windowFocusListener] = new EventSetDescriptor ( logfarmdms.GUI.class, "windowFocusListener", java.awt.event.WindowFocusListener.class, new String[] {"windowGainedFocus", "windowLostFocus"}, "addWindowFocusListener", "removeWindowFocusListener" ); // NOI18N
-            eventSets[EVENT_windowListener] = new EventSetDescriptor ( logfarmdms.GUI.class, "windowListener", java.awt.event.WindowListener.class, new String[] {"windowOpened", "windowClosing", "windowClosed", "windowIconified", "windowDeiconified", "windowActivated", "windowDeactivated"}, "addWindowListener", "removeWindowListener" ); // NOI18N
-            eventSets[EVENT_windowStateListener] = new EventSetDescriptor ( logfarmdms.GUI.class, "windowStateListener", java.awt.event.WindowStateListener.class, new String[] {"windowStateChanged"}, "addWindowStateListener", "removeWindowStateListener" ); // NOI18N
+            eventSets[EVENT_componentListener] = new EventSetDescriptor ( logfarmdms.LFDMS_GUI.class, "componentListener", java.awt.event.ComponentListener.class, new String[] {"componentResized", "componentMoved", "componentShown", "componentHidden"}, "addComponentListener", "removeComponentListener" ); // NOI18N
+            eventSets[EVENT_containerListener] = new EventSetDescriptor ( logfarmdms.LFDMS_GUI.class, "containerListener", java.awt.event.ContainerListener.class, new String[] {"componentAdded", "componentRemoved"}, "addContainerListener", "removeContainerListener" ); // NOI18N
+            eventSets[EVENT_focusListener] = new EventSetDescriptor ( logfarmdms.LFDMS_GUI.class, "focusListener", java.awt.event.FocusListener.class, new String[] {"focusGained", "focusLost"}, "addFocusListener", "removeFocusListener" ); // NOI18N
+            eventSets[EVENT_hierarchyBoundsListener] = new EventSetDescriptor ( logfarmdms.LFDMS_GUI.class, "hierarchyBoundsListener", java.awt.event.HierarchyBoundsListener.class, new String[] {"ancestorMoved", "ancestorResized"}, "addHierarchyBoundsListener", "removeHierarchyBoundsListener" ); // NOI18N
+            eventSets[EVENT_hierarchyListener] = new EventSetDescriptor ( logfarmdms.LFDMS_GUI.class, "hierarchyListener", java.awt.event.HierarchyListener.class, new String[] {"hierarchyChanged"}, "addHierarchyListener", "removeHierarchyListener" ); // NOI18N
+            eventSets[EVENT_inputMethodListener] = new EventSetDescriptor ( logfarmdms.LFDMS_GUI.class, "inputMethodListener", java.awt.event.InputMethodListener.class, new String[] {"inputMethodTextChanged", "caretPositionChanged"}, "addInputMethodListener", "removeInputMethodListener" ); // NOI18N
+            eventSets[EVENT_keyListener] = new EventSetDescriptor ( logfarmdms.LFDMS_GUI.class, "keyListener", java.awt.event.KeyListener.class, new String[] {"keyTyped", "keyPressed", "keyReleased"}, "addKeyListener", "removeKeyListener" ); // NOI18N
+            eventSets[EVENT_mouseListener] = new EventSetDescriptor ( logfarmdms.LFDMS_GUI.class, "mouseListener", java.awt.event.MouseListener.class, new String[] {"mouseClicked", "mousePressed", "mouseReleased", "mouseEntered", "mouseExited"}, "addMouseListener", "removeMouseListener" ); // NOI18N
+            eventSets[EVENT_mouseMotionListener] = new EventSetDescriptor ( logfarmdms.LFDMS_GUI.class, "mouseMotionListener", java.awt.event.MouseMotionListener.class, new String[] {"mouseDragged", "mouseMoved"}, "addMouseMotionListener", "removeMouseMotionListener" ); // NOI18N
+            eventSets[EVENT_mouseWheelListener] = new EventSetDescriptor ( logfarmdms.LFDMS_GUI.class, "mouseWheelListener", java.awt.event.MouseWheelListener.class, new String[] {"mouseWheelMoved"}, "addMouseWheelListener", "removeMouseWheelListener" ); // NOI18N
+            eventSets[EVENT_propertyChangeListener] = new EventSetDescriptor ( logfarmdms.LFDMS_GUI.class, "propertyChangeListener", java.beans.PropertyChangeListener.class, new String[] {"propertyChange"}, "addPropertyChangeListener", "removePropertyChangeListener" ); // NOI18N
+            eventSets[EVENT_windowFocusListener] = new EventSetDescriptor ( logfarmdms.LFDMS_GUI.class, "windowFocusListener", java.awt.event.WindowFocusListener.class, new String[] {"windowGainedFocus", "windowLostFocus"}, "addWindowFocusListener", "removeWindowFocusListener" ); // NOI18N
+            eventSets[EVENT_windowListener] = new EventSetDescriptor ( logfarmdms.LFDMS_GUI.class, "windowListener", java.awt.event.WindowListener.class, new String[] {"windowOpened", "windowClosing", "windowClosed", "windowIconified", "windowDeiconified", "windowActivated", "windowDeactivated"}, "addWindowListener", "removeWindowListener" ); // NOI18N
+            eventSets[EVENT_windowStateListener] = new EventSetDescriptor ( logfarmdms.LFDMS_GUI.class, "windowStateListener", java.awt.event.WindowStateListener.class, new String[] {"windowStateChanged"}, "addWindowStateListener", "removeWindowStateListener" ); // NOI18N
         }
         catch(IntrospectionException e) {
             e.printStackTrace();
@@ -633,7 +632,7 @@ public class GUIBeanInfo extends SimpleBeanInfo {
             methods[METHOD_location78].setDisplayName ( "" );
             methods[METHOD_lostFocus79] = new MethodDescriptor(java.awt.Component.class.getMethod("lostFocus", new Class[] {java.awt.Event.class, java.lang.Object.class})); // NOI18N
             methods[METHOD_lostFocus79].setDisplayName ( "" );
-            methods[METHOD_main80] = new MethodDescriptor(logfarmdms.GUI.class.getMethod("main", new Class[] {java.lang.String[].class})); // NOI18N
+            methods[METHOD_main80] = new MethodDescriptor(logfarmdms.LFDMS_GUI.class.getMethod("main", new Class[] {java.lang.String[].class})); // NOI18N
             methods[METHOD_main80].setDisplayName ( "" );
             methods[METHOD_minimumSize81] = new MethodDescriptor(java.awt.Container.class.getMethod("minimumSize", new Class[] {})); // NOI18N
             methods[METHOD_minimumSize81].setDisplayName ( "" );

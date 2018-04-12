@@ -28,11 +28,14 @@ package utilities;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-public class CameraDetails {
+/**
+ * @author tuxjsmith@gmail.com
+ */
+public class LFDMS_CameraDetails {
     
     final private ConcurrentHashMap<String, String> PROPERTIES_HM = new ConcurrentHashMap ();
 
-    public CameraDetails () {}
+    public LFDMS_CameraDetails () {}
     
     /**
      * [TODO]
@@ -51,7 +54,7 @@ public class CameraDetails {
      * @param mute_playback_by_default
      * @param screen_location 
      */
-    public CameraDetails (String number,
+    public LFDMS_CameraDetails (String number,
                           String maximum_db_size,
                           String db_location,
                           String enabled,
@@ -59,7 +62,6 @@ public class CameraDetails {
                           String hide,
                           String start_recording_at_startup,
                           String record_video_and_audio_by_default,
-//                          String record_video_only_by_default,
                           String record_audio_only_by_default,
                           String mute_playback_by_default,
                           String screen_location) {
@@ -72,7 +74,6 @@ public class CameraDetails {
         PROPERTIES_HM.put ("hide", hide);
         PROPERTIES_HM.put ("start_recording_at_startup", start_recording_at_startup);
         PROPERTIES_HM.put ("record_video_and_audio_by_default", record_video_and_audio_by_default);
-//        PROPERTIES_HM.put ("record_video_only_by_default", record_video_only_by_default);
         PROPERTIES_HM.put ("record_audio_only_by_default", record_audio_only_by_default);
         PROPERTIES_HM.put ("mute_playback_by_default", mute_playback_by_default);
         PROPERTIES_HM.put ("screen_location", screen_location);
@@ -80,6 +81,7 @@ public class CameraDetails {
     
     /**
      * [TODO]
+     *      More informative parameter name.
      *      Documentation.
      *      Unit test.
      * [/]

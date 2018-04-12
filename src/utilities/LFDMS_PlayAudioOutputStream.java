@@ -37,7 +37,10 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 
-public class PlayAudio extends Thread {
+/**
+ * @author tuxjsmith@gmail.com
+ */
+public class LFDMS_PlayAudioOutputStream extends Thread {
 
     private SourceDataLine playbackLine = null;
     private final AudioFormat AUDIO_FORMAT;
@@ -52,8 +55,8 @@ public class PlayAudio extends Thread {
      * @param af
      * @param dbaos 
      */
-    public PlayAudio (AudioFormat af,
-                      ByteArrayOutputStream dbaos) {
+    public LFDMS_PlayAudioOutputStream (AudioFormat af,
+                            ByteArrayOutputStream dbaos) {
 
         DBA_OS = dbaos;
 

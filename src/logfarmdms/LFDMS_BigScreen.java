@@ -38,14 +38,18 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JToggleButton;
-import static logfarmdms.GUI.isNumeric;
-import static utilities.Constants.CAMERAS_DETAILS_HM;
+import static logfarmdms.LFDMS_GUI.isNumeric;
+import static utilities.LFDMS_Constants.CAMERAS_DETAILS_HM;
 
 /**
- *
- * @author tuxjsmith
+ * [TODO]
+ *      - Option and configuration option to mute audio on play back.
+ *      - Window title will say that audio is enabled or muted.
+ * [/]
+ * 
+ * @author tuxjsmith@gmail.com
  */
-public class BigScreen extends javax.swing.JFrame {
+public class LFDMS_BigScreen extends javax.swing.JFrame {
 
     private final BufferedImage BI;
     /*
@@ -53,27 +57,38 @@ public class BigScreen extends javax.swing.JFrame {
             Can mainGuiPlaybackToggleButton be final ?
         [/]
     */
-    private JToggleButton mainGuiPlaybackToggleButton = null;
-    private final java.net.URL URL = this.getClass ().getResource ("icon_64.png");
+    private final JToggleButton PLAYBACK_TOGGLE_BUTTON;
+    private final java.net.URL URL = this.getClass ().getResource ("/res/icon_64.png");
     private final javax.swing.ImageIcon II = new javax.swing.ImageIcon (URL);
     private final java.awt.Image FRAMEICON = II.getImage ();
     private String unmutedTitle = "";
     private Integer guiRowId = -1;
     
-    /** Creates new form BigScreen
-     * @param tb main GUI playback button
-     * @param rid
+    /** 
+     * Creates new form BigScreen
+     * 
+     * [TODO]
+     *      Documentation.
+     *      Unit test.
+     * 
+     *      Might be better to pass the screen's parent GUI and get the toggle
+     *      button from there, which would also allow for future GUI interrogation.
+     *      
+     *      rid, row id, can that be obtained from LFDMS_Status ?
+     * [/]
+     * @param toggleButton main LFDMS_GUI playback button
+     * @param rowId
     */
-    public BigScreen (JToggleButton tb,
-                      Integer rid) {
+    public LFDMS_BigScreen (JToggleButton toggleButton,
+                            Integer rowId) {
 
         initComponents ();
         
         setIconImage (FRAMEICON);
         
-        mainGuiPlaybackToggleButton = tb;
+        PLAYBACK_TOGGLE_BUTTON = toggleButton;
         
-        guiRowId = rid;
+        guiRowId = rowId;
         
         if (CAMERAS_DETAILS_HM.get ("global").getProperty ("camera_resolution").split (",").length == 2
             && isNumeric (CAMERAS_DETAILS_HM.get ("global").getProperty ("camera_resolution").split (",")[0].trim ())
@@ -178,7 +193,7 @@ public class BigScreen extends javax.swing.JFrame {
         menu_copy.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_MASK));
         menu_copy.setBackground(new java.awt.Color(51, 51, 51));
         menu_copy.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
-        menu_copy.setIcon(new javax.swing.ImageIcon(getClass().getResource("/logfarmdms/edit-copy.png"))); // NOI18N
+        menu_copy.setIcon(new javax.swing.ImageIcon(getClass().getResource("/res/edit-copy.png"))); // NOI18N
         menu_copy.setText("copy image");
         menu_copy.setDoubleBuffered(true);
         menu_copy.addActionListener(new java.awt.event.ActionListener() {
@@ -191,7 +206,7 @@ public class BigScreen extends javax.swing.JFrame {
         menu_mute.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         menu_mute.setText("mute / quiet");
         menu_mute.setDoubleBuffered(true);
-        menu_mute.setIcon(new javax.swing.ImageIcon(getClass().getResource("/logfarmdms/window-close.png"))); // NOI18N
+        menu_mute.setIcon(new javax.swing.ImageIcon(getClass().getResource("/res/window-close.png"))); // NOI18N
         menu_mute.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menu_muteActionPerformed(evt);
@@ -202,7 +217,6 @@ public class BigScreen extends javax.swing.JFrame {
         setTitle("logFarm DMS :: live");
         setBackground(new java.awt.Color(0, 0, 0));
         setMinimumSize(new java.awt.Dimension(320, 240));
-        setPreferredSize(new java.awt.Dimension(320, 240));
         addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentResized(java.awt.event.ComponentEvent evt) {
                 formComponentResized(evt);
@@ -286,9 +300,9 @@ public class BigScreen extends javax.swing.JFrame {
      */
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         
-        if (mainGuiPlaybackToggleButton.isSelected ()) {
+        if (PLAYBACK_TOGGLE_BUTTON.isSelected ()) {
             
-            mainGuiPlaybackToggleButton.doClick ();
+            PLAYBACK_TOGGLE_BUTTON.doClick ();
         }
     }//GEN-LAST:event_formWindowClosing
 
@@ -321,7 +335,7 @@ public class BigScreen extends javax.swing.JFrame {
      * [/]
      * @param bs 
      */
-    public void copyImage (BigScreen bs) {
+    public void copyImage (LFDMS_BigScreen bs) {
         
         Toolkit.getDefaultToolkit ().getSystemClipboard ().setContents (new Transferable () {
 

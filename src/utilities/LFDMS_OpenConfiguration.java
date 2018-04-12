@@ -35,9 +35,12 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class OpenConfiguration implements Constants {
+/**
+ * @author tuxjsmith@gmail.com
+ */
+public class LFDMS_OpenConfiguration implements LFDMS_Constants {
 
-    public OpenConfiguration () {
+    public LFDMS_OpenConfiguration () {
     }
 
     /**
@@ -73,7 +76,7 @@ public class OpenConfiguration implements Constants {
                     Can global_cd be final ?
                 [/TODO]
             */
-            CameraDetails global_cd = new CameraDetails ();
+            LFDMS_CameraDetails global_cd = new LFDMS_CameraDetails ();
             {
 
                 if (jsonObject.has ("number_of_cameras")) {
@@ -121,7 +124,7 @@ public class OpenConfiguration implements Constants {
                             Another final candidate.
                         [/TODO]
                     */
-                    CameraDetails cd = new CameraDetails ((cameraObject.has ("number")) ? cameraObject.getString ("number") : Integer.toString (CAMERAS_DETAILS_HM.size () - 1),
+                    LFDMS_CameraDetails cd = new LFDMS_CameraDetails ((cameraObject.has ("number")) ? cameraObject.getString ("number") : Integer.toString (CAMERAS_DETAILS_HM.size () - 1),
                                                           (cameraObject.has ("maximum_db_size")) ? cameraObject.getString ("maximum_db_size") : "10",
                                                           (cameraObject.has ("db_location")) ? cameraObject.getString ("db_location") : System.getProperty ("user.dir"),
                                                           (cameraObject.has ("enabled")) ? cameraObject.getString ("enabled") : "yes",
