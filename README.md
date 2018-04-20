@@ -3,7 +3,7 @@ Record and playback audio and video from multiple web cams simultaneously.
 
 <b>CLONE THIS PROJECT</b>
 
-- NetBeans > Team > Remote > Clone
+- NetBeans > Team > GIT > Clone
 
 - Repository URL: https://github.com/tuxjsmith/logFarmDMS.git
 
