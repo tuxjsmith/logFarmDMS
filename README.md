@@ -12,6 +12,30 @@ Record and playback audio and video from multiple web cams simultaneously.
 
 - Clone into: /home/userName/NetBeansProjects
 
+If you see an error message:<br>
+HIGHGUI ERROR: V4L: index 1 is not correct!
+
+Then configuation.json has assumed two cameras are connected to your computer.
+<pre>
+"cameras": [{
+	    "number": "0",
+	    :
+    }, {
+            "number": "1",
+	    :
+    }]
+</pre>
+
+The error is not critical and the application will run normally. If the second camera configuration details are deleted:
+<pre>
+{
+    "number": "1",
+    :
+}
+</pre>
+
+An error message will not be generated.
+
 <br>
 <b>CONTACT</b>
 
