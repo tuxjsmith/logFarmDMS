@@ -70,7 +70,7 @@ public class LFDMS_AudioInit {
      *      Unit test.
      * [/]
      */
-    public static final void audioInit () {
+    public static final void AUDIO_INIT () {
     
         try {
             

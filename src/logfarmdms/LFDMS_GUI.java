@@ -29,6 +29,7 @@ package logfarmdms;
 import java.awt.image.BufferedImage;
 import java.sql.*;
 import java.util.Enumeration;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -45,12 +46,12 @@ import static org.bytedeco.javacpp.opencv_highgui.cvSetCaptureProperty;
 import utilities.LFDMS_AudioInit;
 import static utilities.LFDMS_Constants.CAMERAS_DETAILS_HM;
 import static utilities.LFDMS_Constants.CAMERAS_HM;
-import utilities.LFDMS_DatabaseStuff;
+import utilities.LFDMS_DbInit;
 import utilities.LFDMS_OpenConfiguration;
 import utilities.LFDMS_Timers;
 import utilities.LFDMS_Constants;
+import utilities.LFDMS_PlayAudioOutputStream;
 import utilities.LFDMS_Status;
-
 
 /**
  * [TODO]
@@ -67,11 +68,12 @@ public final class LFDMS_GUI extends javax.swing.JFrame implements LFDMS_Constan
             Replace variables with a PROPERTIES_HM collection.
         [/]
     */
+    private final ConcurrentHashMap<String, Object> PROPERTIES_HM = new ConcurrentHashMap ();
     
     private final Object FONT = new CvFont ();
     private final LFDMS_Status STATUS = new LFDMS_Status ();
     private final LFDMS_Timers TIMERS = new LFDMS_Timers (this);
-    private final LFDMS_DatabaseStuff DB_STUFF = new LFDMS_DatabaseStuff ();
+    private final LFDMS_DbInit DB_STUFF = new LFDMS_DbInit ();
     private final LFDMS_BigScreen BIG_SCREEN;
     private final LFDMS_ExportGui EXPORT_GUI;
     /*
@@ -88,6 +90,8 @@ public final class LFDMS_GUI extends javax.swing.JFrame implements LFDMS_Constan
     private final java.net.URL URL = this.getClass ().getResource ("/res/icon_64.png");
     private final javax.swing.ImageIcon II = new javax.swing.ImageIcon (URL);
     private final java.awt.Image FRAME_ICON = II.getImage ();
+    
+    private static LFDMS_GUI lfdmsHeadGui = null;
     
     /**
      * Default GUI constructor.
@@ -111,7 +115,7 @@ public final class LFDMS_GUI extends javax.swing.JFrame implements LFDMS_Constan
         /*
             Only main-gui because we only record from a single microphone.
         */
-        LFDMS_AudioInit.audioInit ();
+        LFDMS_AudioInit.AUDIO_INIT ();
         
         CAMERA_NUMBER = 0;
         
@@ -135,7 +139,7 @@ public final class LFDMS_GUI extends javax.swing.JFrame implements LFDMS_Constan
                 A database class for access to connections would be better. 
             [/]
         */
-        LFDMS_DatabaseStuff.INIT_AUDIO_DATABASE ();
+        LFDMS_DbInit.INIT_AUDIO_DATABASE ();
         
         /*
             [BUG]
@@ -143,7 +147,7 @@ public final class LFDMS_GUI extends javax.swing.JFrame implements LFDMS_Constan
                 not be played back; might be able to export it though.
             [/]
         */
-        LFDMS_Timers.getRecordAudioTimer ().schedule (LFDMS_Timers.GET_NEW_CAPTURE_AUDIO_TIMERTASK (), 500, 1000);
+//        LFDMS_Timers.getRecordAudioTimer ().schedule (LFDMS_Timers.GET_NEW_CAPTURE_AUDIO_TIMERTASK (), 500, 5000);
         //</editor-fold>
         
         setTitle ("logFarmDMS :: " + CAMERA_NUMBER);
@@ -157,7 +161,7 @@ public final class LFDMS_GUI extends javax.swing.JFrame implements LFDMS_Constan
                 Can we move it to a method so constructors can call that.
             [/]
         */
-        BIG_SCREEN = new LFDMS_BigScreen (playToggleButton, LFDMS_Status.getAudioPlaybackRowId ());
+        BIG_SCREEN = new LFDMS_BigScreen (playToggleButton ) ; //, LFDMS_Status.getAudioPlaybackRowId ());
         BIG_SCREEN.setTitle ("logFarm DMS :: " + CAMERA_NUMBER + " :: live"); 
         /*
             set the initial location of bigScreen
@@ -327,7 +331,7 @@ public final class LFDMS_GUI extends javax.swing.JFrame implements LFDMS_Constan
                 Can we move it to a method so constructors can call that.
             [/]
         */
-        BIG_SCREEN = new LFDMS_BigScreen (playToggleButton, LFDMS_Status.getAudioPlaybackRowId ());
+        BIG_SCREEN = new LFDMS_BigScreen ( playToggleButton ); //, LFDMS_Status.getAudioPlaybackRowId ());
         BIG_SCREEN.setTitle ("logFarm DMS :: " + CAMERA_NUMBER + " :: live"); 
         /*
             set the initial location of bigScreen
@@ -439,10 +443,9 @@ public final class LFDMS_GUI extends javax.swing.JFrame implements LFDMS_Constan
                     CAMERA_NUMBER.toString ()).getProperty ("start_recording_at_startup")
                 [/]
             
-                Start capture timers.
+                Start capture/live-feed timer.
             */
             TIMERS.getCaptureTimer ().schedule (TIMERS.getNewCaptureTimerTask (), 250, 250);
-            LFDMS_Timers.getAudioPlaybackTimer ().schedule (TIMERS.getNewPlaybackAudioTimerTask (), 5000, 5000);
             /*
                 End capture timers.
             */
@@ -480,7 +483,6 @@ public final class LFDMS_GUI extends javax.swing.JFrame implements LFDMS_Constan
         }
     }
     
-
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -534,8 +536,7 @@ public final class LFDMS_GUI extends javax.swing.JFrame implements LFDMS_Constan
         jPanel1.setPreferredSize(new java.awt.Dimension(40, 10));
 
         recordToggleButton.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
-        recordToggleButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/res/media-playback-stop.png"))); // NOI18N
-        recordToggleButton.setSelected(true);
+        recordToggleButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/res/media-record.png"))); // NOI18N
         recordToggleButton.setToolTipText("start/stop recording");
         recordToggleButton.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 0)));
         recordToggleButton.setDoubleBuffered(true);
@@ -779,7 +780,7 @@ public final class LFDMS_GUI extends javax.swing.JFrame implements LFDMS_Constan
         else {
          
             LFDMS_Status.setCaptureAudio ( Boolean.FALSE );
-            getStatus ().setShowPlayBackImages ( Boolean.FALSE );
+//            getStatus ().setShowPlayBackImages ( Boolean.FALSE );
             
             if ( LFDMS_Timers.getRecordAudioTimer () != null) {
 
@@ -803,25 +804,6 @@ public final class LFDMS_GUI extends javax.swing.JFrame implements LFDMS_Constan
                 GUIS_HM.get (KEY).cleanUp ();
             }
             
-            /*
-                Could be useful.
-            */
-//            try {
-//            
-//                if (LFDMS_DatabaseStuff.getAudioDatabaseConnection () != null) {
-//                    
-//                    LFDMS_DatabaseStuff.getAudioDatabaseConnection ().close ();
-//                }
-//                
-//                /*
-//                    capture timer closes camera_database_connection
-//                */
-//            }
-//            catch (SQLException  | NullPointerException ex) {
-//                
-//                System.err.println ("formWindowClosing " + ex.getMessage ());
-//            }
-            
             LFDMS_AudioInit.getLine ().stop ();
             LFDMS_AudioInit.getLine ().drain ();
             LFDMS_AudioInit.getLine ().close ();
@@ -836,8 +818,8 @@ public final class LFDMS_GUI extends javax.swing.JFrame implements LFDMS_Constan
      */
     public void cleanUp () {
         
-        LFDMS_Status.setAudioPlayback ( Boolean.FALSE ); 
-        LFDMS_Status.setAudioRecord ( Boolean.FALSE );
+        LFDMS_Status.setAudioPlaybackOwner ( null ); 
+//        LFDMS_Status.setAudioRecord ( Boolean.FALSE );
         
         if (TIMERS.getCaptureTimer () != null) {
             
@@ -858,13 +840,23 @@ public final class LFDMS_GUI extends javax.swing.JFrame implements LFDMS_Constan
      */
     private void liveImageLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_liveImageLabelMouseClicked
 
-        if (playToggleButton.isSelected ()) playToggleButton.doClick ();
+        if (playToggleButton.isSelected ()) {
+            
+            playToggleButton.doClick ();
+            
+            
+        }
+        
+        if ( STATUS.getSliderHasBeenMoved () ) {
+
+            STATUS.setSliderHasBeenMoved ( Boolean.FALSE );
+        }
         
         /*
             the user has chosen to show live video
             so we will not display playback images
         */
-        getStatus ().setShowPlayBackImages ( Boolean.FALSE );
+//        getStatus ().setShowPlayBackImages ( Boolean.FALSE );
 
         BIG_SCREEN.setTitle ("logFarmDMS :: " + getCameraNumber () + " :: live");
         
@@ -879,20 +871,128 @@ public final class LFDMS_GUI extends javax.swing.JFrame implements LFDMS_Constan
      */
     private void recordToggleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_recordToggleButtonActionPerformed
 
-        testAudioKeepGoing ();
+        LFDMS_Status.setCaptureAudio ( testAudioKeepGoing () );
         
-        if (!recordToggleButton.isSelected ()) {
+        /*
+            User has just unselected the record button.
+        */
+        if ( !recordToggleButton.isSelected () ) {
 
-            recordToggleButton.setIcon (new javax.swing.ImageIcon (getClass ().getResource ("/res/media-record.png")));
+            getRecordToggleButton ().setIcon (new javax.swing.ImageIcon (getClass ().getResource ("/res/media-record.png")));
             
-            if (!statusBarLabel.getText ().equals (" not recording")) statusBarLabel.setText (" not recording");
+            /*
+                If non of the other GUIs are recording then we can stop audio
+                recording.
+            */
+            if (!LFDMS_Status.getCaptureAudio ()) {
+                
+                LFDMS_Timers.getRecordAudioTimer ().cancel ();
+            }
+            
+            getStatusBarLabel ().setText ( " not recording" );
         }
+        /*
+            User has started recording from a camera.
+        */
         else {
-
+            
             recordToggleButton.setIcon (new javax.swing.ImageIcon (getClass ().getResource ("/res/media-playback-stop.png")));
+            
+            /*
+                If non of the other GUIs are recording then we can start audio
+                recording.
+            */
+            if (!LFDMS_Status.getCaptureAudio ()) {
+                
+                LFDMS_Timers.getRecordAudioTimer ().schedule (LFDMS_Timers.GET_NEW_CAPTURE_AUDIO_TIMERTASK (), 0, AUDIO_DURATION_I);
+            }
+            
+            /*
+                Status label ascii spinner is set by captureTimerTask.
+            */
         }
     }//GEN-LAST:event_recordToggleButtonActionPerformed
 
+    private void stopGuiPlayback () {
+        
+        if (!getStepBackButton ().isEnabled ()) {
+            
+            getStepBackButton ().setEnabled ( Boolean.TRUE );
+        }
+        
+        if (!getStepForwardButton ().isEnabled ()) {
+            
+            getStepForwardButton ().setEnabled ( Boolean.TRUE );
+        }
+        
+        if (!getExportButton ().isEnabled ()) {
+            
+            getExportButton ().setEnabled ( Boolean.TRUE );
+        }
+        
+        LFDMS_PlayAudioOutputStream.stopPlay ();
+            
+        LFDMS_Timers.PlaybackAudioTimerTask.clearBuffers ();
+
+        /*
+            Change the playback button icon to the play-circle icon.
+        */
+        playToggleButton.setIcon (new javax.swing.ImageIcon (getClass ().getResource ("/res/media-playback-start.png")));
+
+        /*
+            Not likely since we always record audio and so if this
+            button has changed state to unselected then we were recording
+            up until this point.
+        */
+        if ( LFDMS_Status.getAudioPlaybackOwner () == null ) {
+
+            /*
+                do nothing
+            */
+            System.out.println ("playback owner is already null");
+        }
+        else if ( !LFDMS_Status.getAudioPlaybackOwner ().equals ( this ) ) {
+
+            /*
+                again do nothing since this is none of our business.
+            */
+            System.out.println ("playback owner is already another GUI");
+        } 
+        else {
+
+            /*
+                If there are other GUIs currently playing back then
+                transfer play back ownership to the first found.
+
+                This procedure will not stop audio playback timer but will
+                start the playing back from the position of the new owner's
+                slider.
+            */
+            autoTransferAudioPlaybackOwnership ();
+
+            /*
+                if audio owner equals 'this' then we need to cancel the
+                audio playback
+            */
+            if (LFDMS_Status.getAudioPlaybackOwner () == null) {
+
+                LFDMS_Timers.getAudioPlaybackTimer ().cancel ();
+            }
+            else if ( LFDMS_Status.getAudioPlaybackOwner ().equals ( this ) ) {
+
+                LFDMS_Timers.getAudioPlaybackTimer ().cancel ();
+
+                LFDMS_Status.setAudioPlaybackOwner ( null );
+            }
+            else {
+
+                /*
+                    foo
+                */
+            }
+        }
+    }
+    
     /**
      * [TODO]
      *      Documentation.
@@ -901,19 +1001,48 @@ public final class LFDMS_GUI extends javax.swing.JFrame implements LFDMS_Constan
      */
     private void playToggleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_playToggleButtonActionPerformed
 
+        /*
+            Unselected / stopped playback.
+        */
         if (!playToggleButton.isSelected ()) {
-
-            /*
-                CaptureTimerTask checks for: playToggleButton.isSelected ()
-            */
             
-            playToggleButton.setIcon (new javax.swing.ImageIcon (getClass ().getResource ("/res/media-playback-start.png")));
+            stopGuiPlayback ();
         }
+        /*
+            Playback button is selected.
+        */
         else {
 
             showBigScreen ();
             
-            playToggleButton.setIcon (new javax.swing.ImageIcon (getClass ().getResource ("/res/media-playback-stop.png")));           
+            /*
+                Change the playback button icon to the stop-square icon.
+            */
+            playToggleButton.setIcon (new javax.swing.ImageIcon (getClass ().getResource ("/res/media-playback-stop.png")));   
+            
+            if ( LFDMS_Status.getAudioPlaybackOwner () == null ) {
+                
+                LFDMS_Timers.setAudioPlaybackTimer (); 
+                 
+                LFDMS_Timers.getAudioPlaybackTimer ().schedule (LFDMS_Timers.getNewPlaybackAudioTimerTask (), 0, AUDIO_DURATION_I);
+                
+                LFDMS_Status.setAudioPlaybackOwner ( this );
+            }
+            
+            if ( getStepBackButton ().isEnabled () ) {
+            
+                getStepBackButton ().setEnabled ( Boolean.FALSE );
+            }
+
+            if ( getStepForwardButton ().isEnabled () ) {
+
+                getStepForwardButton ().setEnabled ( Boolean.FALSE );
+            }
+
+            if ( getExportButton ().isEnabled ()) {
+
+                getExportButton ().setEnabled ( Boolean.FALSE );
+            }
         }
     }//GEN-LAST:event_playToggleButtonActionPerformed
 
@@ -925,7 +1054,17 @@ public final class LFDMS_GUI extends javax.swing.JFrame implements LFDMS_Constan
      */
     private void playbackSliderMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_playbackSliderMouseReleased
 
-        getStatus ().setSliderHasBeenMoved ( Boolean.TRUE );
+        if (playToggleButton.isSelected ()) {
+            
+            playToggleButton.doClick ();
+        }
+        
+        if ( !STATUS.getSliderHasBeenMoved () ) {
+        
+            STATUS.setSliderHasBeenMoved ( Boolean.TRUE ); 
+        }
+        
+        TIMERS.displaySinglePlaybackImage ();
         
         showBigScreen (); 
     }//GEN-LAST:event_playbackSliderMouseReleased
@@ -940,11 +1079,12 @@ public final class LFDMS_GUI extends javax.swing.JFrame implements LFDMS_Constan
 
         showBigScreen ();
         
-        if (playbackSlider.getValue () > 1) {
+        if (! this.getPlayToggleButton ().isSelected ()
+            && playbackSlider.getValue () > 1) {
             
             playbackSlider.setValue (playbackSlider.getValue () - 1);
             
-            getStatus ().setSliderHasBeenMoved ( Boolean.TRUE );
+            TIMERS.displaySinglePlaybackImage ();
         }
     }//GEN-LAST:event_stepBackButtonActionPerformed
 
@@ -958,11 +1098,12 @@ public final class LFDMS_GUI extends javax.swing.JFrame implements LFDMS_Constan
         
         showBigScreen ();
         
-        if (playbackSlider.getValue () < playbackSlider.getMaximum ()) {
+        if (! this.getPlayToggleButton ().isSelected ()
+            && playbackSlider.getValue () < playbackSlider.getMaximum ()) {
             
             playbackSlider.setValue (playbackSlider.getValue () + 1);
             
-            getStatus ().setSliderHasBeenMoved ( Boolean.TRUE );
+            TIMERS.displaySinglePlaybackImage ();
         }
     }//GEN-LAST:event_stepForwardButtonActionPerformed
 
@@ -999,15 +1140,14 @@ public final class LFDMS_GUI extends javax.swing.JFrame implements LFDMS_Constan
      */
     private void showBigScreen () {
         
-        setSliderMaximumValue ();
-        
-        if (!STATUS.getShowPlayBackImages ()) getStatus ().setShowPlayBackImages ( Boolean.TRUE );
+        if (!BIG_SCREEN.isVisible ()) {
             
-        BIG_SCREEN.setTitle ("logFarmDMS :: " + getCameraNumber () + " :: playback");
+            setSliderMaximumValue ();
+
+            BIG_SCREEN.setTitle ("logFarmDMS :: " + getCameraNumber () + " :: playback");
             
-        if (!BIG_SCREEN.isVisible ()) BIG_SCREEN.setVisible (Boolean.TRUE); 
-        
-        LFDMS_Status.setAudioPlaybackRowId ( -1 );
+            BIG_SCREEN.setVisible (Boolean.TRUE);
+        } 
     }
     
     /**
@@ -1049,70 +1189,8 @@ public final class LFDMS_GUI extends javax.swing.JFrame implements LFDMS_Constan
     */
     final public Boolean setSliderMaximumValue () {
     
-        try {
-            
-            if (getDbStuff ().getCameraDatabaseConnection ().isClosed ()) {
-                    
-                getDbStuff ().setCameraDatabaseConnection ( DriverManager.getConnection ("jdbc:sqlite:" +
-                                                       CAMERAS_DETAILS_HM.get(getCameraNumber ().toString ()).getProperty ("db_location") 
-                                                       + System.getProperty ("file.separator") + 
-                                                       "logFarmDMS_" + getCameraNumber () + ".db" ));
-            }
-            
-            LFDMS_Status.setAudioPlaybackRowId ( -1 );
-            
-            /*
-                We reuse sql, statement and resultSet so we don't make them final.
-            */
-            String sql = "select rowid from fileData order by rowid desc limit 1";
-
-            Statement statement;
-            statement = getDbStuff ().getCameraDatabaseConnection ().createStatement ();
-
-            ResultSet resultSet;
-            resultSet = statement.executeQuery (sql);
-
-            Integer rowCount = 0;
-
-            while (resultSet.next ()) {
-
-                rowCount = resultSet.getInt (1);
-            }
-            
-            resultSet.close ();
-            
-            statement.closeOnCompletion ();
-            
-            //
-            
-            sql = "select rowid from fileData order by rowid asc limit 1";
-
-            statement = getDbStuff ().getCameraDatabaseConnection ().createStatement ();
-
-            resultSet = statement.executeQuery (sql);
-
-            Integer minimum = 1;
-
-            while (resultSet.next ()) {
-
-                minimum = resultSet.getInt (1);
-            }
-            
-            resultSet.close ();
-            
-            statement.closeOnCompletion ();
-            
-            //
-            
-            playbackSlider.setMinimum (minimum);            
-            playbackSlider.setMaximum (rowCount);
-        }
-        catch (SQLException  | NullPointerException ex) {
-
-            System.err.println ("setSliderMaximumValue " + ex.getMessage ());
-            
-            return Boolean.FALSE;
-        }
+        final ResetSliderValues RESET_SLIDER_VALUES = new ResetSliderValues ();
+        RESET_SLIDER_VALUES.start ();
         
         return Boolean.TRUE;
     }
@@ -1125,10 +1203,40 @@ public final class LFDMS_GUI extends javax.swing.JFrame implements LFDMS_Constan
         @Override
         public void run () {
 
-            new LFDMS_GUI ().setVisible (true);
+            lfdmsHeadGui = new LFDMS_GUI ();
+            lfdmsHeadGui.setVisible (true);
         }
     }
  
+    /**
+     * Are any of the GUIs' Record buttons selected.
+     * 
+     * [TODO]
+     *      Documentation.
+     *      Move to a separate class.
+     *      Unit test, return value.
+     * [/] 
+     */
+    private Boolean testAudioKeepGoing () {
+        
+        Boolean b = Boolean.FALSE;
+        
+        for (Enumeration<Integer> e = GUIS_HM.keys (); e.hasMoreElements (); ) {
+
+            final Integer KEY = e.nextElement ();
+
+            if ( !GUIS_HM.get (KEY).equals ( this )
+                 && GUIS_HM.get (KEY).recordToggleButton.isSelected () ) {
+
+                b = Boolean.TRUE;
+
+                break;
+            }
+        }
+        
+        return b;
+    }
+    
     /**
      * [TODO]
      *      Documentation.
@@ -1136,25 +1244,30 @@ public final class LFDMS_GUI extends javax.swing.JFrame implements LFDMS_Constan
      *      Unit test, return value.
      * [/] 
      */
-    private static void testAudioKeepGoing () {
+    private static void autoTransferAudioPlaybackOwnership () {
         
-        for (Enumeration<Integer> e = GUIS_HM.keys (); e.hasMoreElements (); ) {
+        LFDMS_Status.setAudioPlaybackOwner ( null );
+        
+        if (LFDMS_GUI.lfdmsHeadGui.getPlayToggleButton ().isSelected ()) {
+        
+            LFDMS_Status.setAudioPlaybackOwner ( lfdmsHeadGui ); 
+        }
+        else {
+            
+            for (Enumeration<Integer> e = GUIS_HM.keys (); e.hasMoreElements (); ) {
 
-            final Integer KEY = e.nextElement ();
+                final Integer KEY = e.nextElement ();
 
-            if (GUIS_HM.get (KEY).recordToggleButton.isSelected ()) {
+                if ( GUIS_HM.get (KEY).playToggleButton.isSelected () ) {
 
-                LFDMS_Status.setCaptureAudio ( Boolean.TRUE );
+                    LFDMS_Status.setAudioPlaybackOwner ( GUIS_HM.get (KEY) ); 
 
-                break;
+                    break;
+                }    
             }
-
-            LFDMS_Status.setCaptureAudio ( Boolean.FALSE );
         }
     }
-    
-    
-    
+     
     /**
      * [TODO]
      *      Documentation.
@@ -1166,18 +1279,18 @@ public final class LFDMS_GUI extends javax.swing.JFrame implements LFDMS_Constan
      * @param s - String that could be a number.
      * @return Boolean - true if String only contains numerical characters.
      */
-    public static boolean isNumeric (String s) {
+    public static Boolean isNumeric (String s) {
 
         if (s.length () <= 0) {
 
-            return false;
+            return Boolean.FALSE;
         }
 
         for (int i = 0; i < s.length (); i++) {
 
             if (!Pattern.matches ("[0-9]", Character.toString (s.charAt (i)))) { 
 
-                return false;
+                return Boolean.FALSE;
             }
         }
 
@@ -1299,7 +1412,7 @@ public final class LFDMS_GUI extends javax.swing.JFrame implements LFDMS_Constan
      * [/]
      * @return the DB_STUFF
      */
-    public LFDMS_DatabaseStuff getDbStuff () {
+    public LFDMS_DbInit getDbStuff () {
      
         return DB_STUFF;
     }
@@ -1329,11 +1442,109 @@ public final class LFDMS_GUI extends javax.swing.JFrame implements LFDMS_Constan
     }
     
     /**
+     * [TODO]
+     *      Documentation.
+     *      Unit test.       
+     * [/]
+     * @return 
+     */
+    public javax.swing.JButton getExportButton () {
+        
+        return exportButton;
+    }
+    
+    /**
      * @return the STATUS
      */
     public LFDMS_Status getStatus () {
      
         return STATUS;
+    }
+    
+    /**
+     * [TODO]
+     *      Documentation.
+     *      Unit test.       
+     * [/]
+     * 
+     * @param key
+     * @param value 
+     */
+    public void setProperty (String key,
+                             Object value) {
+        
+        PROPERTIES_HM.put (key, value);
+    }
+    
+    public Object getPropertyValue (String key) {
+        
+        return PROPERTIES_HM.get (key);
+    }
+    
+    private class ResetSliderValues extends Thread {
+
+        @Override
+        public void run () {
+
+            try {
+
+                if ( getDbStuff ().getCameraDatabaseConnection ().isClosed () ) {
+
+                    getDbStuff ().setCameraDatabaseConnection ( DriverManager.getConnection ( "jdbc:sqlite:"
+                            + CAMERAS_DETAILS_HM.get ( getCameraNumber ().toString () ).getProperty ( "db_location" )
+                            + System.getProperty ( "file.separator" )
+                            + "logFarmDMS_" + getCameraNumber () + ".db" ) );
+                }
+                
+                /*
+                    We reuse sql, statement and resultSet so we don't make them final.
+                 */
+                String sql = "select rowid from fileData order by rowid desc limit 1";
+
+                Statement statement;
+                statement = getDbStuff ().getCameraDatabaseConnection ().createStatement ();
+
+                ResultSet resultSet;
+                resultSet = statement.executeQuery ( sql );
+
+                Integer rowCount = 0;
+
+                while ( resultSet.next () ) {
+
+                    rowCount = resultSet.getInt ( 1 );
+                }
+
+                resultSet.close ();
+
+                statement.closeOnCompletion ();
+
+                //
+                sql = "select rowid from fileData order by rowid asc limit 1";
+
+                statement = getDbStuff ().getCameraDatabaseConnection ().createStatement ();
+
+                resultSet = statement.executeQuery ( sql );
+
+                Integer minimum = 1;
+
+                while ( resultSet.next () ) {
+
+                    minimum = resultSet.getInt ( 1 );
+                }
+
+                resultSet.close ();
+
+                statement.closeOnCompletion ();
+
+                //
+                playbackSlider.setMinimum ( minimum );
+                playbackSlider.setMaximum ( rowCount );
+            }
+            catch ( SQLException | NullPointerException ex ) {
+
+                System.err.println ( "LFDMS_GUI.ResetSliderValues " + ex.getMessage () );
+            }
+        }
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -1354,7 +1565,7 @@ public final class LFDMS_GUI extends javax.swing.JFrame implements LFDMS_Constan
     private javax.swing.JPanel playbackPanel;
     private javax.swing.JSlider playbackSlider;
     private javax.swing.JPanel recordPanel;
-    public javax.swing.JToggleButton recordToggleButton;
+    private javax.swing.JToggleButton recordToggleButton;
     private javax.swing.JLabel statusBarLabel;
     private javax.swing.JButton stepBackButton;
     private javax.swing.JButton stepForwardButton;

@@ -27,6 +27,7 @@
 package logfarmdms;
 
 import java.awt.Cursor;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
@@ -48,7 +49,7 @@ import javax.swing.JLabel;
 import javax.swing.JToggleButton;
 import static logfarmdms.LFDMS_GUI.isNumeric;
 import static utilities.LFDMS_Constants.CAMERAS_DETAILS_HM;
-import utilities.LFDMS_DatabaseStuff;
+import utilities.LFDMS_DbInit;
 
 /**
  * @author tuxjsmith@gmail.com
@@ -83,7 +84,7 @@ public class LFDMS_ExportGui extends javax.swing.JFrame {
         
         initComponents ();
         
-        setIconImage (FRAME_ICON);
+        setFrameIcon (FRAME_ICON);
         
         CAMERA_NUMBER = cameraNumber;
         
@@ -128,6 +129,11 @@ public class LFDMS_ExportGui extends javax.swing.JFrame {
         //</editor-fold>
         
         jLabel3.setText (System.getProperty ("user.dir") + File.separator); 
+    }
+    
+    private void setFrameIcon (Image image) {
+        
+        setIconImage (image);
     }
 
     /** This method is called from within the constructor to
@@ -395,7 +401,7 @@ public class LFDMS_ExportGui extends javax.swing.JFrame {
 
                     final String ADUIO_SQL_COMMAND = "select fileBytes, date from fileData where date >= datetime(\"" + jLabel1.getText () +"\",'0 minutes') and date <= datetime(\"" + jLabel1.getText () + "\",'" + jSpinner1.getValue () + " minutes')";
 
-                    final Statement AUDIO_STATEMENT = LFDMS_DatabaseStuff.getAudioDatabaseConnection ().createStatement ();
+                    final Statement AUDIO_STATEMENT = LFDMS_DbInit.getAudioDatabaseConnection ().createStatement ();
 
                     final ResultSet AUDIO_RESULT_SET = AUDIO_STATEMENT.executeQuery (ADUIO_SQL_COMMAND);
 
@@ -414,7 +420,7 @@ public class LFDMS_ExportGui extends javax.swing.JFrame {
                 }
                 catch (SQLException | IOException ex) {
 
-                    System.err.println (ex.getMessage ());
+                    System.err.println ("LFDMS_ExportGui.jButton2ActionPerformed " + ex.getMessage ());
                 }
                 
                 /*
@@ -506,11 +512,6 @@ public class LFDMS_ExportGui extends javax.swing.JFrame {
         
         jLabel1.setText (s.split ("\\.")[0]);
     }
-    
-//    public void setToggleRecordButton (JToggleButton tb) {
-//        
-//        mainGuiToggleRecordButton = tb;
-//    }
     
     /**
      * [TODO]

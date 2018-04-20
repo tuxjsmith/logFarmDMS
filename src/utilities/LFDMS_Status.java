@@ -23,58 +23,28 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+
 package utilities;
+
+import logfarmdms.LFDMS_GUI;
 
 /**
  * @author tuxjsmith@gmail.com
  */
 public class LFDMS_Status {
-    
+
+    private static LFDMS_GUI audioPlaybackOwner = null;
+
     public LFDMS_Status () {}
 
-    private Boolean showPlayBackImages_b = Boolean.FALSE, 
+    private Boolean //showPlayBackImages_b = Boolean.FALSE, 
                     sliderHasBeenMoved_b = Boolean.FALSE;
     /*
         If either of these are true then the audio database connection is not 
         closed, if both are false then it is.
     */
-    private static Boolean audioPlayback_b = Boolean.FALSE, 
-                           audioRecord_b = Boolean.FALSE,
-                           captureAudio_b = Boolean.TRUE;
+    private static Boolean captureAudio_b = Boolean.TRUE;
     
-    /*
-     * [TODO]
-     *      Documentation.
-     *      Unit test.       
-     * [/]
-     */
-    private static Integer audioPlaybackRowId_i = -1;
-    
-    /**
-     * [TODO]
-     *      Documentation.
-     *      Unit test.       
-     * [/]
-     * 
-     * @return the showPlayBackImages_b
-     */
-    public Boolean getShowPlayBackImages () {
-     
-        return showPlayBackImages_b;
-    }
-
-    /**
-     * [TODO]
-     *      Documentation.
-     *      Unit test.       
-     * [/]
-     * @param b the showPlayBackImages_b to set
-     */
-    public void setShowPlayBackImages ( Boolean b ) {
-        
-        showPlayBackImages_b = b;
-    }
-
     /**
      * [TODO]
      *      Documentation.
@@ -130,11 +100,11 @@ public class LFDMS_Status {
      *      Documentation.
      *      Unit test.       
      * [/]
-     * @return the audioPlayback_b
+     * @return the audioPlaybackOwner
      */
-    public static Boolean getAudioPlayback () {
+    public static LFDMS_GUI getAudioPlaybackOwner () {
         
-        return audioPlayback_b;
+        return audioPlaybackOwner;
     }
 
     /**
@@ -142,70 +112,10 @@ public class LFDMS_Status {
      *      Documentation.
      *      Unit test.       
      * [/]
-     * @param b the audioPlayback_b to set
+     * @param g the audioPlaybackOwner to set
      */
-    public static void setAudioPlayback ( Boolean b ) {
+    public static void setAudioPlaybackOwner ( LFDMS_GUI g ) {
         
-        audioPlayback_b = b;
-    }
-
-    /**
-     * [TODO]
-     *      Documentation.
-     *      Unit test.       
-     * [/]
-     * @return the audioRecord_b
-     */
-    public static Boolean getAudioRecord () {
-        
-        return audioRecord_b;
-    }
-
-    /**
-     * [TODO]
-     *      Documentation.
-     *      Unit test.       
-     * [/]
-     * @param b the audioRecord_b to set
-     */
-    public static void setAudioRecord ( Boolean b ) {
-        
-        audioRecord_b = b;
-    }
-
-    /**
-     * [TODO]
-     *      Documentation.
-     *      Unit test.       
-     * [/]
-     * @return the audioPlaybackRowId_i
-     */
-    public static Integer getAudioPlaybackRowId () {
-        
-        return audioPlaybackRowId_i;
-    }
-
-    /**
-     * [TODO]
-     *      Documentation.
-     *      Unit test.       
-     * [/]
-     * 
-     * @param i the audioPlaybackRowId_i to set
-     */
-    public static void setAudioPlaybackRowId ( Integer i ) {
-        
-        audioPlaybackRowId_i = i;
-    }
-    
-    /**
-     * [TODO]
-     *      Documentation.
-     *      Unit test.       
-     * [/]
-     */
-    public static void incrementAudioPlaybackRowId () {
-     
-        audioPlaybackRowId_i++;
+        audioPlaybackOwner = g;
     }
 }

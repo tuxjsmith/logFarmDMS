@@ -23,26 +23,22 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+
 package utilities;
 
-import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -50,8 +46,11 @@ import logfarmdms.LFDMS_GUI;
 import static logfarmdms.LFDMS_GUI.isNumeric;
 import org.bytedeco.javacpp.opencv_highgui;
 import static org.bytedeco.javacpp.opencv_highgui.cvQueryFrame;
+import static utilities.LFDMS_Constants.AUDIO_DURATION_I;
 import static utilities.LFDMS_Constants.CAMERAS_DETAILS_HM;
 import static utilities.LFDMS_Constants.CAMERAS_HM;
+import static utilities.LFDMS_Constants.MAX_BUFFERS_I;
+import static utilities.LFDMS_Constants.MAX_NUMBER_OF_OS_I;
 
 /**
  * @author tuxjsmith@gmail.com
@@ -59,10 +58,13 @@ import static utilities.LFDMS_Constants.CAMERAS_HM;
 public class LFDMS_Timers {
 
     private Timer captureTimer = new Timer (),
-            hideTimer = new Timer ();
+                  hideTimer = new Timer ();
 
     private final static Timer RECORD_AUDIO_TIMER = new Timer ();
     private static Timer audioPlaybackTimer = new Timer ();
+    
+    private BufferedImage PLAYBACK_BI,
+                          CAMERA_BI;
 
     private final LFDMS_GUI TIMERS_GUI;
 
@@ -70,7 +72,7 @@ public class LFDMS_Timers {
 
         TIMERS_GUI = gui;
     }
-
+    
     /**
      * @return the CAPTURE_TIMER
      */
@@ -80,11 +82,14 @@ public class LFDMS_Timers {
     }
 
     /**
-     * @param captureTimer the CAPTURE_TIMER to set
+     * [TODO] 
+     *      Document. 
+     *      Unit test. 
+     * [/]
      */
-    public void setCaptureTimer ( Timer captureTimer ) {
+    public void setCaptureTimer () {
 
-        this.captureTimer = captureTimer;
+        captureTimer = new Timer ();
     }
 
     /**
@@ -104,11 +109,14 @@ public class LFDMS_Timers {
     }
 
     /**
-     * @param timer the AUDIO_PLAYBACK_TIMER to set
+     * [TODO] 
+     *      Document. 
+     *      Unit test. 
+     * [/]
      */
-    public static void setAudioPlaybackTimer ( Timer timer ) {
+    public static void setAudioPlaybackTimer () {
 
-        audioPlaybackTimer = timer;
+        audioPlaybackTimer = new Timer ();
     }
 
     /**
@@ -120,19 +128,22 @@ public class LFDMS_Timers {
     }
 
     /**
-     * @param timer the HIDE_TIMER to set
+     * [TODO] 
+     *      Document. 
+     *      Unit test. 
+     * [/]
      */
-    public void setHideTimer ( Timer timer ) {
+    public void setHideTimer () {
 
-        hideTimer = timer;
+        hideTimer = new Timer ();
     }
 
     /**
      * [TODO]
-     *      Documentation.
-     *      Unit test.
-     * [/] 
-     * @return 
+     *
+     * Documentation. Unit test. [/]
+     *
+     * @return
      */
     public CaptureTimerTask getNewCaptureTimerTask () {
 
@@ -141,15 +152,46 @@ public class LFDMS_Timers {
 
     /**
      * [TODO]
-     *      Documentation.
-     * [/] 
+     *      Document.
+     *      Unit test.
+     * [/]
+     */
+    public void displaySinglePlaybackImage () {
+        
+        final Playback PLAYBACK = new Playback ( PLAYBACK_BI );
+        PLAYBACK.run ();
+    }
+
+     /**
+     * [TODO] Documentation. Unit test. [/]
+     *
+     * @return
+     */
+    public final HideTimerTask GET_NEW_HIDE_TIMERTASK () {
+
+        return new HideTimerTask ();
+    }
+
+    /**
+     * [TODO] Documentation. Unit test. [/]
+     *
+     * This is unique to each GUI.
+     *
+     * @return
+     */
+    public static PlaybackAudioTimerTask getNewPlaybackAudioTimerTask () {
+
+        return new PlaybackAudioTimerTask ();
+    }
+    
+    /**
+     * [TODO]
+     *
+     * Documentation. Unit test. [/]
      */
     public class CaptureTimerTask extends TimerTask {
 
         private Integer statusRecordTickCounter = 0;
-
-        private final BufferedImage FULL_SIZE_BI,
-                CAMERA_BUFFERED_IMAGE;
 
         public CaptureTimerTask () {
 
@@ -160,710 +202,475 @@ public class LFDMS_Timers {
                     && isNumeric ( CAMERAS_DETAILS_HM.get ( "global" ).getProperty ( "camera_resolution" ).split ( "," )[ 0 ].trim () )
                     && isNumeric ( CAMERAS_DETAILS_HM.get ( "global" ).getProperty ( "camera_resolution" ).split ( "," )[ 1 ].trim () ) ) {
 
-                FULL_SIZE_BI = new BufferedImage ( Integer.valueOf ( CAMERAS_DETAILS_HM.get ( "global" ).getProperty ( "camera_resolution" ).split ( "," )[ 0 ].trim () ),
+                PLAYBACK_BI = new BufferedImage ( Integer.valueOf ( CAMERAS_DETAILS_HM.get ( "global" ).getProperty ( "camera_resolution" ).split ( "," )[ 0 ].trim () ),
                         Integer.valueOf ( CAMERAS_DETAILS_HM.get ( "global" ).getProperty ( "camera_resolution" ).split ( "," )[ 1 ].trim () ),
                         8 );
 
-                CAMERA_BUFFERED_IMAGE = new BufferedImage ( Integer.valueOf ( CAMERAS_DETAILS_HM.get ( "global" ).getProperty ( "camera_resolution" ).split ( "," )[ 0 ].trim () ),
+                CAMERA_BI = new BufferedImage ( Integer.valueOf ( CAMERAS_DETAILS_HM.get ( "global" ).getProperty ( "camera_resolution" ).split ( "," )[ 0 ].trim () ),
                         Integer.valueOf ( CAMERAS_DETAILS_HM.get ( "global" ).getProperty ( "camera_resolution" ).split ( "," )[ 1 ].trim () ),
                         8 );
             }
             else {
 
-                FULL_SIZE_BI = new BufferedImage ( 640, 480, 8 );
+                PLAYBACK_BI = new BufferedImage ( 640, 480, 8 );
 
-                CAMERA_BUFFERED_IMAGE = new BufferedImage ( 640, 480, 8 );
+                CAMERA_BI = new BufferedImage ( 640, 480, 8 );
             }
         }
 
         @Override
         public void run () {
 
-            /*
-                A null is generated if there isn't enough bandwidth for multiple
-                cameras
-            
-                need to change the error message
-             */
-            try {
+            // <editor-fold defaultstate="collapsed" desc="Record toggle button is selected."> 
+            if ( !TIMERS_GUI.getStatus ().getSliderHasBeenMoved () ) {
+                
+                final LiveFeed LIVE_FEED = new LiveFeed ( CAMERA_BI );
+                LIVE_FEED.run ();
+            }
+            //</editor->
+
+            // <editor-fold defaultstate="collapsed" desc="Record toggle button is selected.">  
+            if ( TIMERS_GUI.getRecordToggleButton ().isSelected () ) {
+
+                // <editor-fold defaultstate="collapsed" desc="Recording, spinning ascii status text.">  
+                statusRecordTickCounter++;
+                if ( statusRecordTickCounter <= 2 ) {
+                    TIMERS_GUI.getStatusBarLabel ().setText ( " recording \\" );
+                }
+                else if ( statusRecordTickCounter > 2 && statusRecordTickCounter <= 4 ) {
+                    TIMERS_GUI.getStatusBarLabel ().setText ( " recording |" );
+                }
+                else if ( statusRecordTickCounter > 4 && statusRecordTickCounter <= 6 ) {
+                    TIMERS_GUI.getStatusBarLabel ().setText ( " recording /" );
+                }
+                else if ( statusRecordTickCounter > 6 && statusRecordTickCounter < 8 ) {
+                    TIMERS_GUI.getStatusBarLabel ().setText ( " recording --" );
+                }
+                else {
+                    statusRecordTickCounter = 0;
+                }
+                //</editor-fold>
 
                 if ( TIMERS_GUI.getVideoAudioRadioButton ().isSelected () ) {
 
-                    /*
-                        Grab a single image from the camera
-                    */
-                    BufferedImage bi = cvQueryFrame ( ( opencv_highgui.CvCapture ) CAMERAS_HM.get ( TIMERS_GUI.getCameraNumber () ) ).getBufferedImage ();
-
-                    /*
-                        [TODO]
-                            The following if statement could be a function returning
-                            a Boolean since we use it multiple times.
-                        [/]
-                    
-                        Make sure there are width and height resolution parameters: 2
-                        and make sure the width and height parameters are numerical.
-                    */
-                    if ( CAMERAS_DETAILS_HM.get ( "global" ).getProperty ( "camera_resolution" ).split ( "," ).length == 2
-                         && isNumeric ( CAMERAS_DETAILS_HM.get ( "global" ).getProperty ( "camera_resolution" ).split ( "," )[ 0 ].trim () )
-                         && isNumeric ( CAMERAS_DETAILS_HM.get ( "global" ).getProperty ( "camera_resolution" ).split ( "," )[ 1 ].trim () ) ) {
-                        
-                        /*
-                            Old stuff that might be informative.
-                        
-                            IplImage implimage = cvQueryFrame ((CvCapture) CAMERAS_HM.get (CAMERA_NUMBER)); 
-                            OpenCVFrameConverter.ToIplImage grabberConverter = new OpenCVFrameConverter.ToIplImage();
-                            Java2DFrameConverter paintConverter = new Java2DFrameConverter();
-                            frame = GRABBER_CONVERTER.convert(cvQueryFrame ((CvCapture) CAMERAS_HM.get (CAMERA_NUMBER)));
-                         */
-                        
-                        /*
-                            Create a BufferedImage based on preferences width and height.
-                        */
-                        CAMERA_BUFFERED_IMAGE.getGraphics ().drawImage ( bi, //PAINT_CONVERTER.getBufferedImage(frame,1),  
-                                0, 0,
-                                Integer.valueOf ( CAMERAS_DETAILS_HM.get ( "global" ).getProperty ( "camera_resolution" ).split ( "," )[ 0 ].trim () ),
-                                Integer.valueOf ( CAMERAS_DETAILS_HM.get ( "global" ).getProperty ( "camera_resolution" ).split ( "," )[ 1 ].trim () ),
-                                null );
-                    }
-                    /*
-                        Preferences width and height were invalid so we create a BufferedImage with default dimensions.
-                    */
-                    else {
-
-                        CAMERA_BUFFERED_IMAGE.getGraphics ().drawImage ( bi,
-                                0, 0,
-                                640, 480,
-                                null );
-                    }
-
-                    bi.flush ();
+                    final RecordImages RECORD_IMAGES = new RecordImages ( CAMERA_BI );
+                    RECORD_IMAGES.run ();
                 }
-                
-                /*
-                    We don't want to capture video, audio only.
-                */
+            }
+            //</editor-fold>            
+
+            // <editor-fold defaultstate="collapsed" desc="Playback">
+            if ( TIMERS_GUI.getPlayToggleButton ().isSelected () ) {
+
+                if ( TIMERS_GUI.getPlaybackSlider ().getValue () < TIMERS_GUI.getPlaybackSlider ().getMaximum () ) {
+
+                    TIMERS_GUI.getPlaybackSlider ().setValue ( TIMERS_GUI.getPlaybackSlider ().getValue () + 1 );
+                }
                 else {
-
-                    /*
-                        We create a separate Graphics object otherwise the font
-                        settings get lost.
-                     */
-                    Graphics g = CAMERA_BUFFERED_IMAGE.getGraphics ();
-
-                    /*
-                        [TODO]
-                            Hmm, not sure we need this if statement because we
-                            are not recording video.
-                        [/]
                     
-                        [TODO]
-                            The following if statement could be a function returning
-                            a Boolean since we use it multiple times.
-                        [/]
-                    
-                        Make sure there are width and height resolution parameters: 2
-                        and make sure the width and height parameters are numerical.
+                    /*
+                        If recording then reset the slider value.
                     */
-//                    if ( CAMERAS_DETAILS_HM.get ( "global" ).getProperty ( "camera_resolution" ).split ( "," ).length == 2
-//                         && isNumeric ( CAMERAS_DETAILS_HM.get ( "global" ).getProperty ( "camera_resolution" ).split ( "," )[ 0 ].trim () )
-//                         && isNumeric ( CAMERAS_DETAILS_HM.get ( "global" ).getProperty ( "camera_resolution" ).split ( "," )[ 1 ].trim () ) ) {
-//
-//                        g.clearRect ( 0, 0,
-//                                      Integer.valueOf ( CAMERAS_DETAILS_HM.get ( "global" ).getProperty ( "camera_resolution" ).split ( "," )[ 0 ].trim () ),
-//                                      Integer.valueOf ( CAMERAS_DETAILS_HM.get ( "global" ).getProperty ( "camera_resolution" ).split ( "," )[ 1 ].trim () ) );
-//                    }
-//                    else {
+                    if (TIMERS_GUI.getRecordToggleButton ().isSelected ()) {
 
-                        g.clearRect ( 0, 0, 320, 240 );
-//                    }
-
-                    g.setFont ( new Font ( Font.SANS_SERIF, Font.PLAIN, 84 ) );
-
-                    g.drawString ( "audio only", 100, 240 );
-
-                    g.setFont ( new Font ( Font.SANS_SERIF, Font.PLAIN, 52 ) );
-                    GregorianCalendar calendar = new GregorianCalendar ();
-                    g.drawString ( calendar.get ( Calendar.YEAR ) + "-"
-                            + ( ( calendar.get ( Calendar.MONTH ) + 1 < 10 ) ? "0" + ( calendar.get ( Calendar.MONTH ) + 1 ) : ( calendar.get ( Calendar.MONTH ) + 1 ) ) + "-"
-                            + ( ( calendar.get ( Calendar.DATE ) < 10 ) ? "0" + calendar.get ( Calendar.DATE ) : calendar.get ( Calendar.DATE ) ) + " "
-                            + ( ( calendar.get ( Calendar.HOUR_OF_DAY ) < 10 ) ? "0" + calendar.get ( Calendar.HOUR_OF_DAY ) : calendar.get ( Calendar.HOUR_OF_DAY ) ) + ":"
-                            + ( ( calendar.get ( Calendar.MINUTE ) < 10 ) ? "0" + calendar.get ( Calendar.MINUTE ) : calendar.get ( Calendar.MINUTE ) ) + ":"
-                            + ( ( calendar.get ( Calendar.SECOND ) < 10 ) ? "0" + calendar.get ( Calendar.SECOND ) : calendar.get ( Calendar.SECOND ) ),
-                            30, 450 );
-                }
-
-                /*
-                    If the GUI is not minimised grab a live image and push it
-                    on to the live image JLabel as its ImageIcon.
-                */
-                if ( TIMERS_GUI.getState () != JFrame.ICONIFIED ) {
-
-                    TIMERS_GUI.getLiveImageLabel ().setIcon ( 
-                            new ImageIcon ( CAMERA_BUFFERED_IMAGE.getScaledInstance ( TIMERS_GUI.getLiveImageLabel ().getWidth (),
-                                                                                      TIMERS_GUI.getLiveImageLabel ().getHeight (),
-                                                                                      Image.SCALE_DEFAULT ) ) );
-                }
-
-                /*
-                    Show live image in bigScreen if bigScreen is visible 
-                    and not minimised 
-                    and we are not playing back video.
-                 */
-                if ( TIMERS_GUI.getBigScreen ().isVisible ()
-                     && TIMERS_GUI.getBigScreen ().getState () != JFrame.ICONIFIED
-                     && !TIMERS_GUI.getStatus ().getShowPlayBackImages () ) {
-
-                    TIMERS_GUI.getBigScreen ().setBufferedImage ( CAMERA_BUFFERED_IMAGE );
-                }
-
-                /*
-                    We still write to the camera database even though the user
-                    only wants to record audio.
-                
-                    A blank image with date and time is written to the camera
-                    database.
-                
-                    Downside is we are going to use CPU and disk space when we
-                    don't need to.
-                
-                    [TODO]
-                        Don't record blank, timestamped images to the video
-                        database.
-                
-                        Playback of audio-only recordings will be effected by 
-                        this change.
-                    [/]
-                
-                    Create a camera database connection.
-                 */
-                if ( TIMERS_GUI.getDbStuff ().getCameraDatabaseConnection ().isClosed () ) {
-
-                    TIMERS_GUI.getDbStuff ().setCameraDatabaseConnection ( DriverManager.getConnection ( "jdbc:sqlite:"
-                            + CAMERAS_DETAILS_HM.get ( TIMERS_GUI.getCameraNumber ().toString () ).getProperty ( "db_location" )
-                            + System.getProperty ( "file.separator" )
-                            + "logFarmDMS_" + TIMERS_GUI.getCameraNumber () + ".db" ) );
-                }
-
-                /*
-                    If the record button is selected
-                 */
-                if ( TIMERS_GUI.getRecordToggleButton ().isSelected () ) {
-
-                    // <editor-fold defaultstate="collapsed" desc="Spinning ascii">  
-                    statusRecordTickCounter++;
-                    if ( statusRecordTickCounter <= 2 ) {
-                        TIMERS_GUI.getStatusBarLabel ().setText ( " recording \\" );
-                    }
-                    else if ( statusRecordTickCounter > 2 && statusRecordTickCounter <= 4 ) {
-                        TIMERS_GUI.getStatusBarLabel ().setText ( " recording |" );
-                    }
-                    else if ( statusRecordTickCounter > 4 && statusRecordTickCounter <= 6 ) {
-                        TIMERS_GUI.getStatusBarLabel ().setText ( " recording /" );
-                    }
-                    else if ( statusRecordTickCounter > 6 && statusRecordTickCounter < 8 ) {
-                        TIMERS_GUI.getStatusBarLabel ().setText ( " recording --" );
+                        TIMERS_GUI.setSliderMaximumValue ();
                     }
                     else {
-                        statusRecordTickCounter = 0;
-                    }
-                    //</editor-fold>
-                    
-                    /*
-                        Insert the camera BufferedImage into the database.
-                        If audio only, a blank timestamped image is inserted.
-                    */
-                    byte[] bytesOut;
-
-                    try ( ByteArrayOutputStream BYTE_ARRAY_OUTPUT_STREAM = new ByteArrayOutputStream () ) {
-
-                        /*
-                            [WARNING] 
-                                If this is set to jpg then OpenJDK will crash
-                            [/]
-                         */
-                        ImageIO.write ( CAMERA_BUFFERED_IMAGE, 
-                                        "jpg", 
-                                        BYTE_ARRAY_OUTPUT_STREAM );
                         
-                        CAMERA_BUFFERED_IMAGE.flush ();
-
-                        bytesOut = BYTE_ARRAY_OUTPUT_STREAM.toByteArray ();
-                        
-                        BYTE_ARRAY_OUTPUT_STREAM.flush ();
-                    }
-
-                    final String SQL_COMMAND = "insert into fileData (fileBytes, date) values(?,(select (STRFTIME('%Y-%m-%d %H:%M:%f', 'NOW', 'localtime'))))";
-                    final PreparedStatement PSTMT = TIMERS_GUI.getDbStuff ().getCameraDatabaseConnection ().prepareStatement ( SQL_COMMAND );
-                    PSTMT.setBytes ( 1, bytesOut );
-                    PSTMT.executeUpdate ();
-                    PSTMT.closeOnCompletion ();
-
-                    /*
-                        For garbage collection.
-                    */
-                    bytesOut = null;
-
-                    /*
-                        1 megabyte = 1048576 bytes.
-                    
-                        [TODO]
-                            Make this a constant: 1048576
-                        [/]
-                    
-                        If the database size is larger than the preferences
-                        maximum size then make space by removing some of the 
-                        oldest images.
-                     */
-                    if ( ( new File ( CAMERAS_DETAILS_HM.get ( TIMERS_GUI.getCameraNumber ().toString () ).getProperty ( "db_location" )
-                                      + System.getProperty ( "file.separator" )
-                                      + "logFarmDMS_" + TIMERS_GUI.getCameraNumber () + ".db" ).length () / 1048576 ) > ( Integer.valueOf ( CAMERAS_DETAILS_HM.get ( TIMERS_GUI.getCameraNumber ().toString () ).getProperty ( "maximum_db_size" ) ) * 1000 ) ) {
-
-                        /*
-                            get highest rowid
-                         */
-                        final Statement STMT = TIMERS_GUI.getDbStuff ().getCameraDatabaseConnection ().createStatement ();
-
-                        String sql = "select rowid from fileData order by rowid desc limit 1";
-
-                        ResultSet resultSet = STMT.executeQuery ( sql );
-
-                        Integer highest = 0;
-
-                        while ( resultSet.next () ) {
-
-                            highest = resultSet.getInt ( 1 );
-                        }
-
-                        //
-                        /*
-                            get lowest rowid
-                         */
-                        sql = "select rowid from fileData order by rowid asc limit 1";
-
-                        resultSet = STMT.executeQuery ( sql );
-
-                        Integer lowest = 0;
-
-                        while ( resultSet.next () ) {
-
-                            lowest = resultSet.getInt ( 1 );
-                        }
-
-                        resultSet.close ();
-                        STMT.closeOnCompletion ();
-
-                        /*
-                            [TODO]
-                                Needs a better explanation of the hard coded number.
-                                If this figure is valid then make it a constant.
-                            [/]
-                        
-                            guessed there are 36000 rows per gigabyte
-                            highest - lowest will give us the number of rows in
-                            the database
-                         */
-                        if ( ( highest - lowest ) >= 36000 * Integer.valueOf ( CAMERAS_DETAILS_HM.get ( TIMERS_GUI.getCameraNumber ().toString () ).getProperty ( "maximum_db_size" ) ) ) {
-
-                            final Statement STATEMENT = TIMERS_GUI.getDbStuff ().getCameraDatabaseConnection ().createStatement ();
-
-                            /*
-                                delete the oldest 1 minute of video frames
-                             */
-                            sql = "delete from fileData where rowid < (" + lowest + " + 240)";
-
-//                            System.out.println (sql);
-                            STATEMENT.executeUpdate ( sql );
-
-                            STATEMENT.closeOnCompletion ();
-
-                            TIMERS_GUI.getPlaybackSlider ().setMinimum ( lowest );
-
-                            /*
-                                recording, database is maximum size, database 
-                                files have been deleted so reset slider values
-                             */
-                            TIMERS_GUI.setSliderMaximumValue ();
-                        }
-                        else {
-
-                            /*
-                                the database file will remain this size
-                            
-                                for testing :: show me: highest - lowest
-                             */
-//                            System.out.println ("CaptureTimerTask [10.2] :: (highest - lowest): " + (highest - lowest));
-                        }
-                    }
-
-                    /*
-                        recording, the database is not too big so just increment 
-                        the slider's maximum value
-                     */
-                    TIMERS_GUI.getPlaybackSlider ().setMaximum ( TIMERS_GUI.getPlaybackSlider ().getMaximum () + 1 );
-                }
-                /*
-                    we are not recording anymore and the playback slider is at
-                    the maximum position so unselect the playback button
-                 */
-                else {
-
-                    if ( TIMERS_GUI.getPlayToggleButton ().isSelected ()
-                            && TIMERS_GUI.getPlaybackSlider ().getValue () >= TIMERS_GUI.getPlaybackSlider ().getMaximum () ) {
-
                         TIMERS_GUI.getPlayToggleButton ().doClick ();
                     }
                 }
 
-                /*
-                    play back
-                 */
-                if ( TIMERS_GUI.getPlayToggleButton ().isSelected ()
-                        || TIMERS_GUI.getStatus ().getSliderHasBeenMoved () ) {
+                final Playback PLAYBACK = new Playback ( PLAYBACK_BI );
+                PLAYBACK.run ();
+            }
+            //</editor-fold>
+        }
+    }
+    
+    /**
+     * [TODO] Document. Unit test. [/]
+     */
+    private class Playback {
 
-                    /*
-                        don't automatically move the playback slider
-                    
-                        if sliderHasBeenMoved_b is true (above) then the 
-                        user has manually moved the slider, either forwards 
-                        or backwards so we don't want to automatically
-                        move it at this very moment, it will move next time
-                     */
-                    if ( TIMERS_GUI.getStatus ().getSliderHasBeenMoved () ) {
+        private final BufferedImage PLAYBACK_BI;
 
-                        TIMERS_GUI.getStatus ().setSliderHasBeenMoved ( Boolean.FALSE );
-                    }
-                    else {
+        public Playback ( BufferedImage bi ) {
 
-                        TIMERS_GUI.getPlaybackSlider ().setValue ( TIMERS_GUI.getPlaybackSlider ().getValue () + 1 );
-                    }
+            PLAYBACK_BI = bi;
+        }
 
-                    final Statement STATEMENT = TIMERS_GUI.getDbStuff ().getCameraDatabaseConnection ().createStatement ();
+        public void run () {
 
-                    String sql = ( "select fileBytes, date from fileData where rowid = " + TIMERS_GUI.getPlaybackSlider ().getValue () );
+            try {
 
-//                    System.out.println (sql);
-                    final ResultSet RESULTSET;
-                    RESULTSET = STATEMENT.executeQuery ( sql );
+                final Statement STATEMENT = TIMERS_GUI.getDbStuff ().getCameraDatabaseConnection ().createStatement ();
 
-                    byte[] data = null;
+                final String SQL = "select fileBytes, date from fileData where rowid = " + TIMERS_GUI.getPlaybackSlider ().getValue ();
 
-                    while ( RESULTSET.next () ) {
+                final ResultSet RESULTSET;
 
-                        data = RESULTSET.getBytes ( 1 );
+                RESULTSET = STATEMENT.executeQuery ( SQL );
 
-                        TIMERS_GUI.getPlaybackDateLabel ().setText ( RESULTSET.getString ( 2 ) );
-                    }
+                byte[] data = null;
 
-                    RESULTSET.close ();
+                while ( RESULTSET.next () ) {
 
-                    if ( data != null ) {
+                    data = RESULTSET.getBytes ( 1 );
 
-                        try ( final ByteArrayInputStream BA_IS = new ByteArrayInputStream ( data );
-                                final BufferedInputStream BIN = new BufferedInputStream ( BA_IS ) ) {
-
-                            if ( TIMERS_GUI.getBigScreen ().isVisible ()
-                                    && TIMERS_GUI.getBigScreen ().getState () != JFrame.ICONIFIED ) {
-
-                                if ( CAMERAS_DETAILS_HM.get ( "global" ).getProperty ( "camera_resolution" ).split ( "," ).length == 2
-                                        && isNumeric ( CAMERAS_DETAILS_HM.get ( "global" ).getProperty ( "camera_resolution" ).split ( "," )[ 0 ].trim () )
-                                        && isNumeric ( CAMERAS_DETAILS_HM.get ( "global" ).getProperty ( "camera_resolution" ).split ( "," )[ 1 ].trim () ) ) {
-
-                                    FULL_SIZE_BI.getGraphics ().drawImage ( ImageIO.read ( BIN ),
-                                            0, 0,
-                                            Integer.valueOf ( CAMERAS_DETAILS_HM.get ( "global" ).getProperty ( "camera_resolution" ).split ( "," )[ 0 ].trim () ),
-                                            Integer.valueOf ( CAMERAS_DETAILS_HM.get ( "global" ).getProperty ( "camera_resolution" ).split ( "," )[ 1 ].trim () ),
-                                            null );
-                                }
-                                else {
-
-                                    FULL_SIZE_BI.getGraphics ().drawImage ( ImageIO.read ( BIN ),
-                                            0, 0,
-                                            640, 480,
-                                            null );
-                                }
-
-                                TIMERS_GUI.getBigScreen ().setBufferedImage ( FULL_SIZE_BI );
-
-                                FULL_SIZE_BI.flush ();
-                            }
-                        }
-                    }
-                    else {
-
-                        TIMERS_GUI.getDbStuff ().setCameraDatabaseConnection ( DriverManager.getConnection ( "jdbc:sqlite:"
-                                + CAMERAS_DETAILS_HM.get ( TIMERS_GUI.getCameraNumber ().toString () ).getProperty ( "db_location" )
-                                + System.getProperty ( "file.separator" )
-                                + "logFarmDMS_" + TIMERS_GUI.getCameraNumber () + ".db" ) );
-                    }
-
-                    STATEMENT.closeOnCompletion ();
+                    TIMERS_GUI.getPlaybackDateLabel ().setText ( RESULTSET.getString ( 2 ) );
                 }
 
-                TIMERS_GUI.getDbStuff ().getCameraDatabaseConnection ().close ();
-            }
-            catch ( IOException | SQLException ex ) {
+                RESULTSET.close ();
 
-                System.err.println ( "Capture [1] " + ex.getMessage () );
-            }
-            catch ( NullPointerException ex ) {
+                STATEMENT.closeOnCompletion ();
 
-//                System.err.println ("It's possible that there isn't enough USB bandwidth on this computer\nfor multiple cameras.");
-                System.err.println ( "Capture [2] " + ex.getMessage () );
+                if ( data != null ) {
+
+                    try ( final ByteArrayInputStream BA_IS = new ByteArrayInputStream ( data );
+                            final BufferedInputStream BIN = new BufferedInputStream ( BA_IS ) ) {
+
+                        PLAYBACK_BI.getGraphics ().drawImage ( ImageIO.read ( BIN ),
+                                0, 0,
+                                PLAYBACK_BI.getWidth (),
+                                PLAYBACK_BI.getHeight (),
+                                null );
+
+                        TIMERS_GUI.getBigScreen ().setBufferedImage ( PLAYBACK_BI );
+
+                        PLAYBACK_BI.flush ();
+                    }
+                    catch ( final IOException IOE ) {
+
+                        System.err.println ( IOE.getMessage () );
+                    }
+
+                    /*
+                        For garbage collection.
+                     */
+                    data = null;
+                }
+            }
+            catch ( SQLException sqle ) {
+
+                System.err.println ( "LFDMS_Timers.CaptureTimerTask " + sqle.getMessage () );
             }
         }
 
     }
 
     /**
-     * [TODO] Documentation. Unit test. [/]
-     *
-     * This is unique to each GUI.
-     *
-     * @return
+     * [TODO] Document. Unit test. [/]
      */
-    public PlaybackAudioTimerTask getNewPlaybackAudioTimerTask () {
+    private class RecordImages {
 
-        return new PlaybackAudioTimerTask ();
+        private final BufferedImage RECORD_BI;
+
+        public RecordImages ( BufferedImage bi ) {
+
+            RECORD_BI = bi;
+        }
+
+        public void run () {
+
+            // '%Y-%m-%d %H:%M:%f' Is the same as:
+            // calendar = new GregorianCalendar ();
+            // imageDateTime_s = calendar.get ( Calendar.YEAR ) + "-"
+            //                                  + ( ( calendar.get ( Calendar.MONTH ) + 1 < 10 ) ? "0" + ( calendar.get ( Calendar.MONTH ) + 1 ) : ( calendar.get ( Calendar.MONTH ) + 1 ) ) + "-"
+            //                                  + ( ( calendar.get ( Calendar.DATE ) < 10 ) ? "0" + calendar.get ( Calendar.DATE ) : calendar.get ( Calendar.DATE ) ) + " "
+            //                                  + ( ( calendar.get ( Calendar.HOUR_OF_DAY ) < 10 ) ? "0" + calendar.get ( Calendar.HOUR_OF_DAY ) : calendar.get ( Calendar.HOUR_OF_DAY ) ) + ":"
+            //                                  + ( ( calendar.get ( Calendar.MINUTE ) < 10 ) ? "0" + calendar.get ( Calendar.MINUTE ) : calendar.get ( Calendar.MINUTE ) ) + ":"
+            //                                  + ( ( calendar.get ( Calendar.SECOND ) < 10 ) ? "0" + calendar.get ( Calendar.SECOND ) : calendar.get ( Calendar.SECOND ) ) + "."
+            //                                  + calendar.get ( Calendar.MILLISECOND );
+            
+            try ( ByteArrayOutputStream BYTE_ARRAY_OUTPUT_STREAM = new ByteArrayOutputStream () ) {
+
+                final String SQL_COMMAND = "insert into fileData (fileBytes, date) values(?,(select (STRFTIME('%Y-%m-%d %H:%M:%f', 'NOW', 'localtime'))))";
+                final PreparedStatement PSTMT = TIMERS_GUI.getDbStuff ().getCameraDatabaseConnection ().prepareStatement ( SQL_COMMAND );
+
+                /*
+                    [WARNING] 
+                        If this is set to jpg then OpenJDK will crash
+                    [/]
+                 */
+                ImageIO.write ( RECORD_BI,
+                        "jpg",
+                        BYTE_ARRAY_OUTPUT_STREAM );
+
+                PSTMT.setBytes ( 1, BYTE_ARRAY_OUTPUT_STREAM.toByteArray () );
+
+                PSTMT.executeUpdate ();
+
+                PSTMT.closeOnCompletion ();
+
+                BYTE_ARRAY_OUTPUT_STREAM.flush ();
+            }
+            catch ( IOException | SQLException ex ) {
+
+                System.err.println ( "LFDMS_Timers.RecordImages " + ex.getMessage () );
+            }
+        }
+
     }
 
     /**
-     * [TODO]
-     *      Documentation.
-     * [/] 
+     * [TODO] Document. Unit test. [/]
      */
-    public class PlaybackAudioTimerTask extends TimerTask {
+    private class LiveFeed {
 
-        private final ByteArrayOutputStream DATA_BYTE_ARRAY_OUTPUTSTREAM = new ByteArrayOutputStream ( 1024 );
+        private final BufferedImage CAPTURE_BI;
 
+        LiveFeed ( BufferedImage captureBi ) {
+
+            CAPTURE_BI = captureBi;
+        }
+
+        public void run () {
+
+            CAPTURE_BI.getGraphics ().drawImage ( cvQueryFrame ( ( opencv_highgui.CvCapture ) CAMERAS_HM.get ( TIMERS_GUI.getCameraNumber () ) ).getBufferedImage (),
+                    0, 0,
+                    CAPTURE_BI.getWidth (),
+                    CAPTURE_BI.getHeight (),
+                    null );
+
+            /*
+                Display the camera image on the live-feed label.
+             */
+            if ( TIMERS_GUI.getState () != JFrame.ICONIFIED
+                    && CAPTURE_BI != null ) {
+
+                TIMERS_GUI.getLiveImageLabel ().setIcon ( new ImageIcon ( CAPTURE_BI.getScaledInstance ( TIMERS_GUI.getLiveImageLabel ().getWidth (),
+                        TIMERS_GUI.getLiveImageLabel ().getHeight (),
+                        Image.SCALE_DEFAULT ) ) );
+            }
+
+            /*
+                Display the camera image on the big screen.
+             */
+            if ( TIMERS_GUI.getBigScreen ().isVisible ()
+                    && TIMERS_GUI.getBigScreen ().getState () != JFrame.ICONIFIED
+                    && !TIMERS_GUI.getPlayToggleButton ().isSelected ()
+                    && CAPTURE_BI != null ) {
+
+                TIMERS_GUI.getBigScreen ().setBufferedImage ( CAPTURE_BI );
+            }
+        }
+
+    }
+
+    /**
+     * [TODO] Documentation. [/]
+     */
+    public static class PlaybackAudioTimerTask extends TimerTask {
+
+        /*
+            Buffer: A collection of outputSteams.
+                    Each outputStream a collection of audio bytes.
+        
+            BUFFERS_HM: A collection of Buffers.
+        */
+        private static ConcurrentHashMap<Integer, ConcurrentHashMap<Integer, ByteArrayOutputStream>> BUFFERS_HM = new ConcurrentHashMap ();
+
+        private static Integer currentBuffer_i = 0,
+                               whichBufferToPlay_i = -1;
+
+        /**
+         * [TODO]
+         *      Documentation.
+         * [/]
+         */
+        public static void clearBuffers () {
+            
+            BUFFERS_HM = new ConcurrentHashMap ();
+        }
+        
+        /*
+            Initialise a collection of empty buffers.
+        */
         public PlaybackAudioTimerTask () {
+            
+            for (int i = 0; i < MAX_BUFFERS_I; i++) { 
+            
+                BUFFERS_HM.put ( i, new ConcurrentHashMap<> () );
+            }
         }
 
         @Override
         public void run () {
 
-            if ( TIMERS_GUI.getPlayToggleButton ().isSelected ()
-                    && !TIMERS_GUI.getBigScreen ().getMuteAudioMenuItem ().isSelected () ) {
+            if ( LFDMS_Status.getAudioPlaybackOwner () != null ) {
 
-                LFDMS_Status.setAudioPlayback ( Boolean.TRUE );
-
-                /*
-                    if playback slider is at the end and we are no longer recording (!recordToggleButton.isSelected)
-                    then don't get-and-play audio
-                 */
                 try {
-
-                    if ( LFDMS_DatabaseStuff.getAudioDatabaseConnection ().isClosed () ) {
-
-                        LFDMS_DatabaseStuff.setAudioDatabaseConnection ( DriverManager.getConnection ( "jdbc:sqlite:"
-                                + CAMERAS_DETAILS_HM.get ( "global" ).getProperty ( "audio_db_location" )
-                                + System.getProperty ( "file.separator" )
-                                + "logFarmDMSaudio.db" ) );
-                    }
 
                     /*
                         get audio
                      */
-                    final Statement AUDIO_STATEMENT = LFDMS_DatabaseStuff.getAudioDatabaseConnection ().createStatement ();
+                    final Statement AUDIO_STATEMENT = LFDMS_DbInit.getAudioDatabaseConnection ().createStatement ();
 
                     /*
-                         select date from fileData where date >= datetime("2016-07-16 14:04:38.449") and date <= datetime("2016-07-16 14:04:38.449", '+5 seconds');
+                        select date from fileData where date >= datetime("2016-07-16 14:04:38.449") and date <= datetime("2016-07-16 14:04:38.449", '+5 seconds');
                      */
-                    String sql;
-
-                    if ( LFDMS_Status.getAudioPlaybackRowId () < 1 ) {
-
-//                        sql = "select fileBytes, rowid from fileData where date >= datetime('" + playbackDateLabel.getText () + "', '+0 seconds') and date <= datetime('" + playbackDateLabel.getText () + "', '+5 seconds') order by date desc limit 1";
-                        sql = "select fileBytes, rowid from fileData where date >= datetime('" + TIMERS_GUI.getPlaybackDateLabel ().getText () + "', '+0 seconds') and date <= datetime('" + TIMERS_GUI.getPlaybackDateLabel ().getText () + "', '+5 seconds') order by date desc limit 1";
-                    }
-                    else {
-
-                        sql = "select fileBytes from fileData where rowid = " + LFDMS_Status.getAudioPlaybackRowId ();
-                    }
+                    String SQL = "select fileBytes from fileData where date >= datetime('" + LFDMS_Status.getAudioPlaybackOwner ().getPlaybackDateLabel ().getText () + "', '+0 seconds') and date <= datetime('" + LFDMS_Status.getAudioPlaybackOwner ().getPlaybackDateLabel ().getText () + "', '+" + ( AUDIO_DURATION_I / 1000 ) + " seconds') order by date desc limit 1";
 
                     final ResultSet AUDIO_RESULTSET;
-                    AUDIO_RESULTSET = AUDIO_STATEMENT.executeQuery ( sql );
+
+                    AUDIO_RESULTSET = AUDIO_STATEMENT.executeQuery ( SQL );
+
+                    final ByteArrayOutputStream DATA_BYTE_ARRAY_OUTPUTSTREAM = new ByteArrayOutputStream ( 1024 );
 
                     /*
                         closed when there aren't any more audio frames
                         this seems to happen when playback catches up with
                         audio recording
                      */
-                    if ( AUDIO_RESULTSET.isClosed () ) {
+                    while ( AUDIO_RESULTSET.next () ) {
 
-                        LFDMS_Status.setAudioPlaybackRowId ( -1 );
-
-                        TIMERS_GUI.getStepBackButton ().doClick ();
-                        TIMERS_GUI.getStepBackButton ().doClick ();
+                        /*
+                            Push audio bytes into an outputStream.
+                         */
+                        DATA_BYTE_ARRAY_OUTPUTSTREAM.write ( AUDIO_RESULTSET.getBytes ( 1 ) );
                     }
-                    else {
+                    
+                    /*
+                        currentBuffer_i is the key of the buffer we are filling.
+                        If it not filled (MAX_NUMBER_OF_OS_I) then add another 
+                        outputStream.
+                    */
+                    if ( BUFFERS_HM.get ( currentBuffer_i ).size () < MAX_NUMBER_OF_OS_I ) {
 
-                        while ( AUDIO_RESULTSET.next () ) {
+                        /*
+                            if MAX_NUMBER_OF_OS_I = 3 then
+                            BUFFERS_HM.get ( currentBuffer_i ).size () will be: 0, 1, 2
+                            which is why we use it as key value below; 
+                            the outputstream keys get incremented.
+                        */
+                        BUFFERS_HM.get ( currentBuffer_i ).put ( BUFFERS_HM.get ( currentBuffer_i ).size (), 
+                                                                 DATA_BYTE_ARRAY_OUTPUTSTREAM );
+
+                        /*
+                            how many output streams does the current buffer have ?
+                            Is it more than the allowed maximum ?
+                        */
+                        if ( BUFFERS_HM.get ( currentBuffer_i ).size () >= MAX_NUMBER_OF_OS_I ) {
 
                             /*
-                                we wont have a second result field unless 
-                                audioPlaybackRowId_i < 1
-                             */
-                            if ( LFDMS_Status.getAudioPlaybackRowId () < 1 ) {
+                                The current buffer is full so we need to increment
+                                the buffer counter so we start populating the 
+                                next buffer.
+                            
+                                This is also the buffer we send to the audio
+                                player.
+                            
+                                The buffer is emptied by LFDMS_PlayAudioOutputStream.
+                            */
+                            whichBufferToPlay_i = currentBuffer_i;
+                            
+                            if ( currentBuffer_i < MAX_BUFFERS_I -1 ) {
 
-                                LFDMS_Status.setAudioPlaybackRowId ( AUDIO_RESULTSET.getInt ( 2 ) );
+                                currentBuffer_i++;
+                            }
+                            else {
+
+                                currentBuffer_i = 0;
                             }
 
-                            /*
-                                push audio bytes into an output stream buffer
-                             */
-                            DATA_BYTE_ARRAY_OUTPUTSTREAM.write ( AUDIO_RESULTSET.getBytes ( 1 ) );
+                            if ( whichBufferToPlay_i > -1 // -1, the initial/ignore value
+                                 && !BUFFERS_HM.get ( whichBufferToPlay_i ).isEmpty () ) {
 
-                            /*
-                                play that buffer in a separate thread
-                                otherwise it would lock this action
-                             */
-                            final LFDMS_PlayAudioOutputStream PLAY_AUDIO = new LFDMS_PlayAudioOutputStream ( LFDMS_AudioInit.getAudioFormat (),
-                                    DATA_BYTE_ARRAY_OUTPUTSTREAM );
-                            PLAY_AUDIO.start ();
+                                final LFDMS_PlayAudioOutputStream PLAY_AUDIO = new LFDMS_PlayAudioOutputStream ( LFDMS_AudioInit.getAudioFormat (),
+                                                                                                                 BUFFERS_HM.get ( whichBufferToPlay_i ) );
+
+                                PLAY_AUDIO.start ();
+                            }
                         }
-
-                        AUDIO_RESULTSET.close ();
                     }
+
+                    AUDIO_RESULTSET.close ();
 
                     AUDIO_STATEMENT.closeOnCompletion ();
-
-                    if ( !LFDMS_Status.getAudioRecord () ) {
-
-                        LFDMS_DatabaseStuff.getAudioDatabaseConnection ().close ();
-                    }
-
-                    LFDMS_Status.incrementAudioPlaybackRowId ();
+                    
                 }
                 catch ( IOException | SQLException | NullPointerException ex ) { // IOException | LineUnavailableException ex) {
 
-                    System.err.println ( "PlaybackAudioTimerTask " + ex.getMessage () );
-                }
-
-                LFDMS_Status.setAudioPlayback ( Boolean.FALSE );
-            }
-            else {
-
-                if ( !LFDMS_Status.getAudioPlaybackRowId ().equals ( -1 ) ) {
-
-                    LFDMS_Status.setAudioPlaybackRowId ( -1 );
+                    System.err.println ( "LFDMS_Timers.PlaybackAudioTimerTask " + ex.getMessage () );
                 }
             }
         }
-
     }
 
     /**
-     * [TODO]
-     *      Documentation.
-     *      Unit test.
-     * [/] 
-     * 
-     * @return 
+     * [TODO] Documentation. Unit test. [/]
+     *
+     * @return
      */
     public static final CaptureAudioTimerTask GET_NEW_CAPTURE_AUDIO_TIMERTASK () {
-        
+
         return new CaptureAudioTimerTask ();
     }
-    
+
     /**
-     * [TODO]
-     *      Documentation.
-     * [/] 
+     * [TODO] Documentation. [/]
      */
     public static class CaptureAudioTimerTask extends TimerTask {
 
         @Override
         public void run () {
 
-            if ( LFDMS_Status.getCaptureAudio () ) {
+            final Long NOW = System.currentTimeMillis () + AUDIO_DURATION_I;
+
+            final byte BUFFER[] = new byte[ 1024 ];
+
+            try ( final ByteArrayOutputStream AUDIO_BA_OS = new ByteArrayOutputStream () ) {
+
+                while ( System.currentTimeMillis () < NOW ) {
+
+                    int count = LFDMS_AudioInit.getLine ().read ( BUFFER, 0, BUFFER.length );
+
+                    if ( count > 0 ) {
+
+                        AUDIO_BA_OS.write ( BUFFER, 0, count );
+                    }
+                }
+
+                LFDMS_AudioInit.getLine ().flush ();
+
+                byte[] bytesOut = AUDIO_BA_OS.toByteArray ();
+
+                AUDIO_BA_OS.flush ();
+
+                final String SQL_COMMAND = "insert into fileData (fileBytes, date) values(?,(select (STRFTIME('%Y-%m-%d %H:%M:%f', 'NOW', 'localtime'))))";
+
+                final PreparedStatement PSTMT = LFDMS_DbInit.getAudioDatabaseConnection ().prepareStatement ( SQL_COMMAND );
+
+                PSTMT.setBytes ( 1, bytesOut );
+
+                PSTMT.executeUpdate ();
+
+                PSTMT.closeOnCompletion ();
 
                 /*
-            5150, (130) fills the gap between each audio frame
-                 */
-                final Long NOW = System.currentTimeMillis () + 5130;
+                    for garbage collection
+                */
+                bytesOut = null;
+            }
+            catch ( IOException | SQLException | NullPointerException ex ) {
 
-                final byte BUFFER[] = new byte[ 1024 ];
-
-                LFDMS_Status.setAudioRecord ( Boolean.TRUE );
-
-                try ( final ByteArrayOutputStream AUDIO_BA_OS = new ByteArrayOutputStream () ) {
-
-                    if ( LFDMS_DatabaseStuff.getAudioDatabaseConnection ().isClosed () ) {
-
-                        LFDMS_DatabaseStuff.setAudioDatabaseConnection ( DriverManager.getConnection ( "jdbc:sqlite:"
-                                + CAMERAS_DETAILS_HM.get ( "global" ).getProperty ( "audio_db_location" )
-                                + System.getProperty ( "file.separator" )
-                                + "logFarmDMSaudio.db" ) );
-                    }
-
-                    while ( System.currentTimeMillis () < NOW ) {
-
-                        int count = LFDMS_AudioInit.getLine ().read ( BUFFER, 0, BUFFER.length );
-
-                        if ( count > 0 ) {
-
-                            AUDIO_BA_OS.write ( BUFFER, 0, count );
-                        }
-                    }
-
-                    LFDMS_AudioInit.getLine ().flush ();
-
-                    //
-                    byte[] bytesOut = AUDIO_BA_OS.toByteArray ();
-                    AUDIO_BA_OS.flush ();
-
-                    final String SQL_COMMAND = "insert into fileData (fileBytes, date) values(?,(select (STRFTIME('%Y-%m-%d %H:%M:%f', 'NOW', 'localtime'))))";
-
-                    final PreparedStatement PSTMT = LFDMS_DatabaseStuff.getAudioDatabaseConnection ().prepareStatement ( SQL_COMMAND );
-
-                    PSTMT.setBytes ( 1, bytesOut );
-
-                    PSTMT.executeUpdate ();
-
-                    PSTMT.closeOnCompletion ();
-
-                    bytesOut = null;
-
-                    if ( !LFDMS_Status.getAudioPlayback () ) {
-
-                        LFDMS_DatabaseStuff.getAudioDatabaseConnection ().close ();
-                    }
-                }
-                catch ( IOException | SQLException | NullPointerException ex ) {
-
-                    System.err.println ( "recordAudioForAfewSeconds " + ex.getMessage () );
-                }
-
-                LFDMS_Status.setAudioRecord ( Boolean.FALSE );
+                System.err.println ( "LFDMS_Timers.recordAudioForAfewSeconds " + ex.getMessage () );
             }
         }
+
     }
-    
+
     /**
-     * [TODO]
-     *      Documentation.
-     *      Unit test.
-     * [/] 
-     * 
-     * @return 
-     */
-    public final HideTimerTask GET_NEW_HIDE_TIMERTASK () {
-        
-        return new HideTimerTask ();
-    }
-    
-    /**
-     * [TODO]
-     *      Documentation.
-     *      Unit test, return value.
-     * [/] 
+     * [TODO] Documentation. Unit test, return value. [/]
      */
     public class HideTimerTask extends TimerTask {
 
         @Override
         public void run () {
-            
-            TIMERS_GUI.setVisible (Boolean.FALSE);   
+
+            TIMERS_GUI.setVisible ( Boolean.FALSE );
         }
+
     }
 }

@@ -30,6 +30,8 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -42,10 +44,12 @@ import javax.sound.sampled.SourceDataLine;
  */
 public class LFDMS_PlayAudioOutputStream extends Thread {
 
-    private SourceDataLine playbackLine = null;
-    private final AudioFormat AUDIO_FORMAT;
-    private final DataLine.Info DATA_LINE_INFO;
-    private final ByteArrayOutputStream DBA_OS;
+    private static SourceDataLine playbackLine = null;
+    private static AudioFormat audioFormat;
+    private static DataLine.Info dataLineInfo;
+    private static ByteArrayOutputStream byteArrayOutputStream;
+    private static ConcurrentHashMap<Integer, ByteArrayOutputStream> playBuffer_hm = new ConcurrentHashMap ();
+
 
     /**
      * [TODO]
@@ -56,72 +60,287 @@ public class LFDMS_PlayAudioOutputStream extends Thread {
      * @param dbaos 
      */
     public LFDMS_PlayAudioOutputStream (AudioFormat af,
-                            ByteArrayOutputStream dbaos) {
+                                        ByteArrayOutputStream dbaos) {
+    
+        openPlay (af,
+                  dbaos);
+    }
+    
+    /**
+     * [TODO]
+     *      Document.
+     *      Unit test.
+     * [/]
+     * @param af
+     * @param buffer
+     */
+    public LFDMS_PlayAudioOutputStream (AudioFormat af,
+                                        ConcurrentHashMap<Integer, ByteArrayOutputStream> buffer) {
+    
+        openPlayForBuffer ( af,
+                            buffer );
+    }
+    
+    /**
+     * [TODO]
+     *      Document.
+     *      Unit test.
+     * [/]
+     * @param af
+     * @param buffer
+     */
+    public static final void openPlayForBuffer ( AudioFormat af,
+                                                 ConcurrentHashMap<Integer, ByteArrayOutputStream> buffer ) {
+        
+        playBuffer_hm = buffer;
 
-        DBA_OS = dbaos;
+        audioFormat = af;
 
-        AUDIO_FORMAT = af;
-
-        DATA_LINE_INFO = new DataLine.Info (SourceDataLine.class,
+        dataLineInfo = new DataLine.Info (SourceDataLine.class,
                                             af);
         
-        try {
-
-            playbackLine = (SourceDataLine) AudioSystem.getLine (DATA_LINE_INFO);
-
-            playbackLine.open (AUDIO_FORMAT);
-            playbackLine.start ();
+        if ( playbackLine != null ) {
+        
+            playbackLine.drain ();
+            playbackLine.flush ();
         }
-        catch (LineUnavailableException | NullPointerException ex) {
+        
+        if ( playbackLine == null
+             || !playbackLine.isOpen ()) {
+            
+            try {
 
-            System.err.println ("PlayAudio [1] " + ex.getMessage ());
+                playbackLine = (SourceDataLine) AudioSystem.getLine (dataLineInfo);
 
+                playbackLine.open (audioFormat);
+                playbackLine.start ();
+            }
+            catch (LineUnavailableException | NullPointerException ex) {
+
+                System.err.println ("PlayAudio [1] " + ex.getMessage ());
+
+                stopPlay ();
+            }
+        }
+    }
+    
+    /**
+     * [TODO]
+     *      Document.
+     *      Unit test.
+     * [/]
+     * @param af
+     * @param dbaos
+     */
+    public static final void openPlay ( AudioFormat af,
+                                        ByteArrayOutputStream dbaos ) {
+        
+        byteArrayOutputStream = dbaos;
+
+        audioFormat = af;
+
+        dataLineInfo = new DataLine.Info (SourceDataLine.class,
+                                            af);
+        
+        if ( playbackLine != null ) {
+        
+            playbackLine.drain ();
+            playbackLine.flush ();
+        }
+        
+        if ( playbackLine == null
+             || !playbackLine.isOpen ()) {
+            
+            try {
+
+                playbackLine = (SourceDataLine) AudioSystem.getLine (dataLineInfo);
+
+                playbackLine.open (audioFormat);
+                playbackLine.start ();
+            }
+            catch (LineUnavailableException | NullPointerException ex) {
+
+                System.err.println ("PlayAudio [1] " + ex.getMessage ());
+
+                stopPlay ();
+            }
+        }
+    }
+    
+    /**
+     * [TODO]
+     *      Document.
+     *      Unit test.
+     * [/]
+     */
+    public static final void stopPlay () {
+        
+        if ( playbackLine != null ) {
+            
+            playbackLine.stop ();
+            playbackLine.flush ();
+            playbackLine.drain ();
             playbackLine.close ();
+            
+            try {
+                
+                if ( byteArrayOutputStream != null ) {
+                
+                    byteArrayOutputStream.flush ();
+                    byteArrayOutputStream.close ();
+                }
+            }
+            catch (IOException ioe) {
+                
+                System.err.println ( ioe.getMessage () );
+            }
+        }
+        
+        playBuffer_hm.clear ();
+    }
+    
+    /**
+     * Is playbackLine already being used for play back.
+     * 
+     * [TODO]
+     *      Documentation.
+     *      Unit Test.
+     * [/]
+     * @return 
+     */
+    public static Boolean isPlaying () {
+        
+        if ( playbackLine != null ) {
+        
+            return playbackLine.isOpen ();
+        }
+        else {
+            
+            return Boolean.FALSE;
+        }
+    }
+    
+    /**
+     * [TODO]
+     *      Document.
+     *      Unit test.
+     * [/]
+     */
+    private void playSingleSound () {
+
+        if ( byteArrayOutputStream != null ) {
+
+            try {
+
+                byte[] data = byteArrayOutputStream.toByteArray ();
+
+                byteArrayOutputStream.flush ();
+                byteArrayOutputStream.reset ();
+                byteArrayOutputStream.close ();
+
+                try (final AudioInputStream AUDIO_INPUT_STREAM
+                        = new AudioInputStream (new BufferedInputStream (new ByteArrayInputStream (data)),
+                                                audioFormat,
+                                                data.length)) {
+
+                    final byte BUFFER2[] = new byte[1024];
+                    int count;
+
+                    while ((count = AUDIO_INPUT_STREAM.read (BUFFER2,
+                                                             0,
+                                                             1024)) > 0) {
+
+                        if ( playbackLine != null ) {
+
+                            playbackLine.write (BUFFER2,
+                                                0,
+                                                count);
+                        }
+                    }    
+                }
+            }
+            catch (IOException ioe) {
+
+                stopPlay ();
+
+                System.err.println ("LFDMS_PlayAudioOutputStream [3] " + ioe.getMessage ());
+            }
+        }
+    }
+    
+    /**
+     * [TODO]
+     *      Document.
+     *      Unit test.
+     * [/]
+     */
+    private void playBufferOfSounds () {
+        
+        /*
+            loop required to convert byte to Byte.
+         */
+        final ArrayList<Byte> DATA_AL = new ArrayList ();
+
+        for ( int i = 0; i < playBuffer_hm.size (); i++ ) {
+
+            for ( byte b : playBuffer_hm.get ( i ).toByteArray () ) {
+
+                DATA_AL.add ( b );
+            }
+        }
+        
+        playBuffer_hm.clear ();
+
+        final byte[] DATA = new byte[ DATA_AL.size () ];
+
+        for ( int i = 0; i < DATA_AL.size (); i++ ) {
+
+//            DATA[ i ] = DATA_AL.get ( i ).byteValue ();
+
+            DATA[ i ] = DATA_AL.get ( i );
+        }
+
+        /*
+            We have the audio bytes so now push them in to the audio pipe.
+        */
+        try ( final AudioInputStream AUDIO_INPUT_STREAM
+                = new AudioInputStream ( new BufferedInputStream ( new ByteArrayInputStream ( DATA ) ),
+                        audioFormat,
+                        DATA.length ) ) {
+
+            final byte BUFFER2[] = new byte[ 1024 ];
+            int count;
+
+            while ( ( count = AUDIO_INPUT_STREAM.read ( BUFFER2,
+                    0,
+                    1024 ) ) > 0 ) {
+
+                if ( playbackLine != null ) {
+
+                    playbackLine.write ( BUFFER2,
+                            0,
+                            count );
+                }
+            }
+        }
+        catch ( IOException ioe ) {
+
+            stopPlay ();
+
+            System.err.println ( "LFDMS_PlayAudioOutputStream [3] " + ioe.getMessage () );
         }
     }
     
     @Override
     public void run () {
 
-//        System.out.println ("play audio :: dataByteArrayOutputStream.size " + DBA_OS.size ());
-
-        try {
-
-            byte[] data = DBA_OS.toByteArray ();
-            DBA_OS.flush ();
-            DBA_OS.reset ();
-//            DBA_OS.close ();
-
-            try (final AudioInputStream AUDIO_INPUT_STREAM
-                    = new AudioInputStream (new BufferedInputStream (new ByteArrayInputStream (data)),
-                                            AUDIO_FORMAT,
-                                            data.length)) {
-
-                final byte BUFFER2[] = new byte[1024];
-                int count;
-
-                while ((count = AUDIO_INPUT_STREAM.read (BUFFER2,
-                                                         0,
-                                                         1024)) > 0) {
-
-                    playbackLine.write (BUFFER2,
-                                        0,
-                                        count);
-                }
-                
-                playbackLine.flush ();
-                playbackLine.stop ();
-                playbackLine.close ();
-            }
-        }
-        catch (IOException ioe) {
-
-            playbackLine.stop ();
-            playbackLine.close ();
+        if (playBuffer_hm.isEmpty ()) {
             
-            System.err.println ("playAudio [2] " + ioe.getMessage ());
+            playSingleSound ();
         }
-
-//        System.out.println ("thread terminated " + this.getName () + "\n");
+        else {
+            
+            playBufferOfSounds ();
+        }
     }
 }

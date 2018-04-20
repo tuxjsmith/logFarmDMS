@@ -77,18 +77,14 @@ public class LFDMS_BigScreen extends javax.swing.JFrame {
      *      rid, row id, can that be obtained from LFDMS_Status ?
      * [/]
      * @param toggleButton main LFDMS_GUI playback button
-     * @param rowId
     */
-    public LFDMS_BigScreen (JToggleButton toggleButton,
-                            Integer rowId) {
+    public LFDMS_BigScreen ( JToggleButton toggleButton ) {
 
         initComponents ();
         
-        setIconImage (FRAMEICON);
+        setFrameIcon (FRAMEICON);
         
         PLAYBACK_TOGGLE_BUTTON = toggleButton;
-        
-        guiRowId = rowId;
         
         if (CAMERAS_DETAILS_HM.get ("global").getProperty ("camera_resolution").split (",").length == 2
             && isNumeric (CAMERAS_DETAILS_HM.get ("global").getProperty ("camera_resolution").split (",")[0].trim ())
@@ -104,6 +100,18 @@ public class LFDMS_BigScreen extends javax.swing.JFrame {
                                     480,
                                     8);
         }
+    }
+    
+    /**
+     * [TODO]
+     *      Documentation.
+     *      Unit test.
+     * [/]
+     * @param image 
+     */
+    private void setFrameIcon (Image image) {
+        
+        setIconImage (image);
     }
     
     /**

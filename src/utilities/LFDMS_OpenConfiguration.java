@@ -34,11 +34,12 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import static utilities.LFDMS_Constants.CAMERAS_DETAILS_HM;
 
 /**
  * @author tuxjsmith@gmail.com
  */
-public class LFDMS_OpenConfiguration implements LFDMS_Constants {
+public class LFDMS_OpenConfiguration {
 
     public LFDMS_OpenConfiguration () {
     }

@@ -26,6 +26,8 @@
 
 package utilities;
 
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import logfarmdms.LFDMS_GUI;
 
@@ -34,7 +36,11 @@ import logfarmdms.LFDMS_GUI;
  */
 public interface LFDMS_Constants {
 
-    String VERSION = "3.01 alpha";
+    String VERSION_S = "3.01 alpha";
+    
+    Integer AUDIO_DURATION_I = 1000,
+            MAX_BUFFERS_I = 3,
+            MAX_NUMBER_OF_OS_I = 2;
     
     /*
         GUIs are not the same as cameras, this collection is used to clean up
@@ -51,4 +57,6 @@ public interface LFDMS_Constants {
         Camera preferences retrieved from the configuration file.
     */
     ConcurrentHashMap<String, LFDMS_CameraDetails> CAMERAS_DETAILS_HM = new ConcurrentHashMap ();
+    
+    ConcurrentHashMap<String, ArrayList<BufferedImage>> BUFFERED_IMAGES_HM = new ConcurrentHashMap (); 
 }

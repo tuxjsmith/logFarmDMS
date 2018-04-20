@@ -36,7 +36,7 @@ import static utilities.LFDMS_Constants.CAMERAS_DETAILS_HM;
 /**
  * @author tuxjsmith@gmail.com
  */
-public class LFDMS_DatabaseStuff {
+public class LFDMS_DbInit {
 
     /*
         A new instance of cameraDatabaseConnection is created for each camera.
@@ -45,12 +45,12 @@ public class LFDMS_DatabaseStuff {
     
     /*
         There will only be a single audio database connection used for playback
-        by all cameras so it's available from LFDMS_DatabaseStuff as a static
+        by all cameras so it's available from LFDMS_DbInit as a static
         object.
     */
     private static Connection audioDatabaseConnection;
     
-    public LFDMS_DatabaseStuff () {}
+    public LFDMS_DbInit () {}
     
     /**
      * [TODO]
@@ -108,7 +108,7 @@ public class LFDMS_DatabaseStuff {
     public final Boolean INIT_CAMERA_DATABASE (String cameraNumber_s) {
         
         try {
-
+            
             /*
                 Make sure org.sqlite.JDBC is in the class path
                 and throw a ClassNotFoundException if it isn't.
@@ -117,28 +117,28 @@ public class LFDMS_DatabaseStuff {
                 opencv_for_logfarmDMS/sqlite-jdbc-3.8.11.2.jar
             */
             Class.forName ("org.sqlite.JDBC");
-
+            
             if (!new File ( CAMERAS_DETAILS_HM.get(cameraNumber_s).getProperty ("db_location") + System.getProperty ("file.separator") + "logFarmDMS_" + cameraNumber_s + ".db" ).exists ()) {
 
                 setCameraDatabaseConnection ( DriverManager.getConnection ("jdbc:sqlite:" 
-                                                                                    + CAMERAS_DETAILS_HM.get(cameraNumber_s).getProperty ("db_location") 
-                                                                                    + System.getProperty ("file.separator") 
-                                                                                    + "logFarmDMS_" + cameraNumber_s + ".db" ) );
+                                                                           + CAMERAS_DETAILS_HM.get(cameraNumber_s).getProperty ("db_location") 
+                                                                           + System.getProperty ("file.separator") 
+                                                                           + "logFarmDMS_" + cameraNumber_s + ".db" ) );
 
                 final Statement STATEMENT = getCameraDatabaseConnection ().createStatement ();
                 STATEMENT.setQueryTimeout (30);  // set timeout to 30 sec.
 
                 STATEMENT.executeUpdate ("create table fileData (date text,"
-                                                              + "fileBytes blob)");
+                                                                 + "fileBytes blob)");
 
                 STATEMENT.closeOnCompletion ();
             }
             else {
 
                 setCameraDatabaseConnection ( DriverManager.getConnection ("jdbc:sqlite:" +
-                                                       CAMERAS_DETAILS_HM.get(cameraNumber_s).getProperty ("db_location") 
-                                                       + System.getProperty ("file.separator") + 
-                                                       "logFarmDMS_" + cameraNumber_s + ".db" ) );
+                                                                           CAMERAS_DETAILS_HM.get(cameraNumber_s).getProperty ("db_location") 
+                                                                           + System.getProperty ("file.separator") + 
+                                                                           "logFarmDMS_" + cameraNumber_s + ".db" ) );
             }
         }
         catch (ClassNotFoundException | SQLException  | NullPointerException ex) {
@@ -177,20 +177,26 @@ public class LFDMS_DatabaseStuff {
                 and throws a ClassNotFoundException if it isn't
             */
             Class.forName ("org.sqlite.JDBC");
+            
             /*
                 create an audio database if one does not exist
             */
-            if (!new File (CAMERAS_DETAILS_HM.get("global").getProperty ("audio_db_location") 
-                           + System.getProperty ("file.separator") 
-                           + "logFarmDMSaudio.db").exists ()) {
+//            System.out.println (("jdbc:sqlite:" 
+//                                 + CAMERAS_DETAILS_HM.get("global").getProperty ("audio_db_location") 
+//                                 + System.getProperty ("file.separator") 
+//                                 + "logFarmDMSaudio.db"));
+            
+            if (!new File ( CAMERAS_DETAILS_HM.get("global").getProperty ("audio_db_location") 
+                            + System.getProperty ("file.separator") 
+                            + "logFarmDMSaudio.db").exists ()) {
 
-                LFDMS_DatabaseStuff.setAudioDatabaseConnection (DriverManager.getConnection ("jdbc:sqlite:" 
-                                                                                  + CAMERAS_DETAILS_HM.get("global").getProperty ("audio_db_location") 
-                                                                                  + System.getProperty ("file.separator") 
-                                                                                  + "logFarmDMSaudio.db") );
+                LFDMS_DbInit.setAudioDatabaseConnection (DriverManager.getConnection ( "jdbc:sqlite:" 
+                                                                                       + CAMERAS_DETAILS_HM.get("global").getProperty ("audio_db_location") 
+                                                                                       + System.getProperty ("file.separator") 
+                                                                                       + "logFarmDMSaudio.db") );
 
-                final Statement STATEMENT = LFDMS_DatabaseStuff.getAudioDatabaseConnection ().createStatement ();
-                STATEMENT.setQueryTimeout (30);  // set timeout to 30 sec.
+                final Statement STATEMENT = LFDMS_DbInit.getAudioDatabaseConnection ().createStatement ();
+                STATEMENT.setQueryTimeout (30);
 
                 STATEMENT.executeUpdate ("create table fileData (date text,"
                                                               + "fileBytes blob)");
@@ -199,7 +205,7 @@ public class LFDMS_DatabaseStuff {
             }
             else {
                 
-                LFDMS_DatabaseStuff.setAudioDatabaseConnection ( DriverManager.getConnection ("jdbc:sqlite:" 
+                LFDMS_DbInit.setAudioDatabaseConnection ( DriverManager.getConnection ("jdbc:sqlite:" 
                                                                                    + CAMERAS_DETAILS_HM.get("global").getProperty ("audio_db_location") 
                                                                                    + System.getProperty ("file.separator") 
                                                                                    + "logFarmDMSaudio.db") ); 
@@ -222,6 +228,5 @@ public class LFDMS_DatabaseStuff {
         }
         
         return Boolean.TRUE;
-    }
-    
+    }  
 }
