@@ -276,8 +276,6 @@ public class LFDMS_PlayAudioOutputStream extends Thread {
      */
     private void playBufferOfSounds () {
         
-        System.out.println ( LFDMS_Status.isMuted () );
-        
         if ( !LFDMS_Status.isMuted () ) {
         
             /*
