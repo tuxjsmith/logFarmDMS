@@ -50,6 +50,7 @@ import javax.swing.JToggleButton;
 import static logfarmdms.LFDMS_GUI.isNumeric;
 import static utilities.LFDMS_Constants.CAMERAS_DETAILS_HM;
 import utilities.LFDMS_DbInit;
+import utilities.LFDMS_Timers;
 
 /**
  * @author tuxjsmith@gmail.com
@@ -154,6 +155,7 @@ public class LFDMS_ExportGui extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jPanel5 = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
+        statusBarLabel = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
 
         setTitle("export to video file");
@@ -195,7 +197,7 @@ public class LFDMS_ExportGui extends javax.swing.JFrame {
 
         jPanel4.setBackground(new java.awt.Color(51, 51, 51));
         jPanel4.setPreferredSize(new java.awt.Dimension(300, 100));
-        jPanel4.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+        jPanel4.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 6));
 
         jSpinner1.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jSpinner1.setDoubleBuffered(true);
@@ -233,17 +235,17 @@ public class LFDMS_ExportGui extends javax.swing.JFrame {
 
         jPanel6.setBackground(new java.awt.Color(51, 51, 51));
         jPanel6.setPreferredSize(new java.awt.Dimension(300, 25));
+        jPanel6.setLayout(new java.awt.BorderLayout());
 
-        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
-        jPanel6.setLayout(jPanel6Layout);
-        jPanel6Layout.setHorizontalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
-        );
-        jPanel6Layout.setVerticalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 25, Short.MAX_VALUE)
-        );
+        statusBarLabel.setBackground(new java.awt.Color(51, 51, 51));
+        statusBarLabel.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
+        statusBarLabel.setForeground(new java.awt.Color(204, 153, 0));
+        statusBarLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        statusBarLabel.setDoubleBuffered(true);
+        statusBarLabel.setMinimumSize(new java.awt.Dimension(44, 30));
+        statusBarLabel.setOpaque(true);
+        statusBarLabel.setPreferredSize(new java.awt.Dimension(52, 30));
+        jPanel6.add(statusBarLabel, java.awt.BorderLayout.SOUTH);
 
         jPanel4.add(jPanel6);
 
@@ -316,13 +318,13 @@ public class LFDMS_ExportGui extends javax.swing.JFrame {
 
                 Boolean wasRecordButtonSelected_b = Boolean.FALSE;
                 
-                if (GUI_RECORD_TOGGLE_BUTTON != null
-                    && GUI_RECORD_TOGGLE_BUTTON.isSelected ()) {
-                    
-                    GUI_RECORD_TOGGLE_BUTTON.doClick ();
-                    
-                    wasRecordButtonSelected_b = Boolean.TRUE;
-                }
+//                if (GUI_RECORD_TOGGLE_BUTTON != null
+//                    && GUI_RECORD_TOGGLE_BUTTON.isSelected ()) {
+//                    
+//                    GUI_RECORD_TOGGLE_BUTTON.doClick ();
+//                    
+//                    wasRecordButtonSelected_b = Boolean.TRUE;
+//                }
                 
                 setCursor (new Cursor (Cursor.WAIT_CURSOR));
                 
@@ -353,15 +355,21 @@ public class LFDMS_ExportGui extends javax.swing.JFrame {
                     RESULT_SET = STATEMENT.executeQuery (SQL_COMMAND);
 
                     Integer statusExportTickCounter = 0;
+                    statusBarLabel.setText ("exporting ");
                     
                     while (RESULT_SET.next ()) {
 
-                        GUI_STATUS_LABEL.setText ("exporting ");
                         statusExportTickCounter++;
-                        if (statusExportTickCounter <= 2) GUI_STATUS_LABEL.setText ("exporting \\");
-                        else if (statusExportTickCounter > 2 && statusExportTickCounter <= 4) GUI_STATUS_LABEL.setText ("exporting |");
-                        else if (statusExportTickCounter > 4 && statusExportTickCounter <= 6) GUI_STATUS_LABEL.setText ("exporting /");
-                        else if (statusExportTickCounter > 6 && statusExportTickCounter < 8) GUI_STATUS_LABEL.setText ("exporting --");
+                        
+                        if ( statusExportTickCounter == 1 ) statusBarLabel.setText ( " exporting \\" );
+                        else if ( statusExportTickCounter == 2 ) statusBarLabel.setText ( " exporting |" );
+                        else if ( statusExportTickCounter == 3 ) statusBarLabel.setText ( " exporting /" );
+                        else if ( statusExportTickCounter == 4 ) statusBarLabel.setText ( " exporting --" );
+                        else if ( statusExportTickCounter == 5 ) statusBarLabel.setText ( " exporting \\" );
+                        else if ( statusExportTickCounter == 6 ) statusBarLabel.setText ( " exporting |" );
+                        else if ( statusExportTickCounter == 7 ) statusBarLabel.setText ( " exporting /" );
+                        else if ( statusExportTickCounter == 8 ) statusBarLabel.setText ( " exporting --" );
+                        else if ( statusExportTickCounter == 9 ) statusBarLabel.setText ( " exporting \\" );
                         else statusExportTickCounter = 0;
                         
                         BufferedImage image_bi;
@@ -477,12 +485,16 @@ public class LFDMS_ExportGui extends javax.swing.JFrame {
                 
                 setCursor (new Cursor (Cursor.DEFAULT_CURSOR));
                 
-                if (wasRecordButtonSelected_b
-                    && GUI_RECORD_TOGGLE_BUTTON != null
-                    && !GUI_RECORD_TOGGLE_BUTTON.isSelected ()) {
-                    
-                    GUI_RECORD_TOGGLE_BUTTON.doClick ();
-                }
+                statusBarLabel.setText ("export complete");
+                
+//                if ( wasRecordButtonSelected_b ) {
+////                    && GUI_RECORD_TOGGLE_BUTTON != null
+////                    && !GUI_RECORD_TOGGLE_BUTTON.isSelected ()) {
+//
+//                    LFDMS_Timers.setAudioPlaybackTimer ();
+//                    
+//                    GUI_RECORD_TOGGLE_BUTTON.doClick ();
+//                }
             }
         }.start ();
     }//GEN-LAST:event_jButton2ActionPerformed
@@ -498,6 +510,7 @@ public class LFDMS_ExportGui extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JSpinner jSpinner1;
+    private javax.swing.JLabel statusBarLabel;
     // End of variables declaration//GEN-END:variables
 
     /**

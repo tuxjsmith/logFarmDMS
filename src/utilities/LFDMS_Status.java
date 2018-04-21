@@ -37,13 +37,37 @@ public class LFDMS_Status {
 
     public LFDMS_Status () {}
 
-    private Boolean //showPlayBackImages_b = Boolean.FALSE, 
-                    sliderHasBeenMoved_b = Boolean.FALSE;
+    private Boolean sliderHasBeenMoved_b = Boolean.FALSE;
     /*
         If either of these are true then the audio database connection is not 
         closed, if both are false then it is.
     */
-    private static Boolean captureAudio_b = Boolean.TRUE;
+    private static Boolean captureAudio_b = Boolean.TRUE,
+                           muteAudio_b = Boolean.FALSE;
+
+    /**
+     * [TODO]
+     *      Documentation.
+     *      Unit test.       
+     * [/] 
+     * @return the muteAudio_b
+     */
+    public static Boolean isMuted () {
+        
+        return muteAudio_b;
+    }
+
+    /**
+     * [TODO]
+     *      Documentation.
+     *      Unit test.       
+     * [/] 
+     * @param b the muteAudio_b to set
+     */
+    public static void setMuteAudio ( Boolean b ) {
+        
+        muteAudio_b = b;
+    }
     
     /**
      * [TODO]

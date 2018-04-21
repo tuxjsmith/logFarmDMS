@@ -40,6 +40,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JToggleButton;
 import static logfarmdms.LFDMS_GUI.isNumeric;
 import static utilities.LFDMS_Constants.CAMERAS_DETAILS_HM;
+import utilities.LFDMS_Status;
 
 /**
  * [TODO]
@@ -113,18 +114,6 @@ public class LFDMS_BigScreen extends javax.swing.JFrame {
         
         setIconImage (image);
     }
-    
-    /**
-     * [TODO]
-     *      Documentation.
-     *      Unit test or black box test.
-     * [/]
-     * @return 
-     */
-    public JCheckBoxMenuItem getMuteAudioMenuItem () {
-        
-        return menu_mute;
-    }
 
     /**
      * [TODO]
@@ -192,7 +181,6 @@ public class LFDMS_BigScreen extends javax.swing.JFrame {
 
         jPopupMenu1 = new javax.swing.JPopupMenu();
         menu_copy = new javax.swing.JMenuItem();
-        menu_mute = new javax.swing.JCheckBoxMenuItem();
         jLabel1 = new javax.swing.JLabel();
 
         jPopupMenu1.setBackground(new java.awt.Color(51, 51, 51));
@@ -210,17 +198,6 @@ public class LFDMS_BigScreen extends javax.swing.JFrame {
             }
         });
         jPopupMenu1.add(menu_copy);
-
-        menu_mute.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
-        menu_mute.setText("mute / quiet");
-        menu_mute.setDoubleBuffered(true);
-        menu_mute.setIcon(new javax.swing.ImageIcon(getClass().getResource("/res/window-close.png"))); // NOI18N
-        menu_mute.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                menu_muteActionPerformed(evt);
-            }
-        });
-        jPopupMenu1.add(menu_mute);
 
         setTitle("logFarm DMS :: live");
         setBackground(new java.awt.Color(0, 0, 0));
@@ -319,28 +296,6 @@ public class LFDMS_BigScreen extends javax.swing.JFrame {
      *      Documentation.
      *      Unit test or black box test.
      * [/]
-     * @param evt 
-     */
-    private void menu_muteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menu_muteActionPerformed
-        
-        if (menu_mute.isSelected ()) {
-            
-            unmutedTitle = getTitle ();
-            setTitle (getTitle () + " :: muted");
-        }
-        else {
-            
-            setTitle (unmutedTitle);
-            
-            guiRowId = -1;
-        }
-    }//GEN-LAST:event_menu_muteActionPerformed
-
-    /**
-     * [TODO]
-     *      Documentation.
-     *      Unit test or black box test.
-     * [/]
      * @param bs 
      */
     public void copyImage (LFDMS_BigScreen bs) {
@@ -374,6 +329,5 @@ public class LFDMS_BigScreen extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPopupMenu jPopupMenu1;
     private javax.swing.JMenuItem menu_copy;
-    private javax.swing.JCheckBoxMenuItem menu_mute;
     // End of variables declaration//GEN-END:variables
 }

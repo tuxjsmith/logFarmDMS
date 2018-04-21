@@ -276,58 +276,63 @@ public class LFDMS_PlayAudioOutputStream extends Thread {
      */
     private void playBufferOfSounds () {
         
-        /*
-            loop required to convert byte to Byte.
-         */
-        final ArrayList<Byte> DATA_AL = new ArrayList ();
-
-        for ( int i = 0; i < playBuffer_hm.size (); i++ ) {
-
-            for ( byte b : playBuffer_hm.get ( i ).toByteArray () ) {
-
-                DATA_AL.add ( b );
-            }
-        }
+        System.out.println ( LFDMS_Status.isMuted () );
         
-        playBuffer_hm.clear ();
+        if ( !LFDMS_Status.isMuted () ) {
+        
+            /*
+                loop required to convert byte to Byte.
+             */
+            final ArrayList<Byte> DATA_AL = new ArrayList ();
 
-        final byte[] DATA = new byte[ DATA_AL.size () ];
+            for ( int i = 0; i < playBuffer_hm.size (); i++ ) {
 
-        for ( int i = 0; i < DATA_AL.size (); i++ ) {
+                for ( byte b : playBuffer_hm.get ( i ).toByteArray () ) {
 
-//            DATA[ i ] = DATA_AL.get ( i ).byteValue ();
-
-            DATA[ i ] = DATA_AL.get ( i );
-        }
-
-        /*
-            We have the audio bytes so now push them in to the audio pipe.
-        */
-        try ( final AudioInputStream AUDIO_INPUT_STREAM
-                = new AudioInputStream ( new BufferedInputStream ( new ByteArrayInputStream ( DATA ) ),
-                        audioFormat,
-                        DATA.length ) ) {
-
-            final byte BUFFER2[] = new byte[ 1024 ];
-            int count;
-
-            while ( ( count = AUDIO_INPUT_STREAM.read ( BUFFER2,
-                    0,
-                    1024 ) ) > 0 ) {
-
-                if ( playbackLine != null ) {
-
-                    playbackLine.write ( BUFFER2,
-                            0,
-                            count );
+                    DATA_AL.add ( b );
                 }
             }
-        }
-        catch ( IOException ioe ) {
 
-            stopPlay ();
+            playBuffer_hm.clear ();
 
-            System.err.println ( "LFDMS_PlayAudioOutputStream [3] " + ioe.getMessage () );
+            final byte[] DATA = new byte[ DATA_AL.size () ];
+
+            for ( int i = 0; i < DATA_AL.size (); i++ ) {
+
+    //            DATA[ i ] = DATA_AL.get ( i ).byteValue ();
+
+                DATA[ i ] = DATA_AL.get ( i );
+            }
+
+            /*
+                We have the audio bytes so now push them in to the audio pipe.
+            */
+            try ( final AudioInputStream AUDIO_INPUT_STREAM
+                    = new AudioInputStream ( new BufferedInputStream ( new ByteArrayInputStream ( DATA ) ),
+                            audioFormat,
+                            DATA.length ) ) {
+
+                final byte BUFFER2[] = new byte[ 1024 ];
+                int count;
+
+                while ( ( count = AUDIO_INPUT_STREAM.read ( BUFFER2,
+                        0,
+                        1024 ) ) > 0 ) {
+
+                    if ( playbackLine != null ) {
+
+                        playbackLine.write ( BUFFER2,
+                                0,
+                                count );
+                    }
+                }
+            }
+            catch ( IOException ioe ) {
+
+                stopPlay ();
+
+                System.err.println ( "LFDMS_PlayAudioOutputStream [3] " + ioe.getMessage () );
+            }
         }
     }
     

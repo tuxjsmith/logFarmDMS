@@ -108,7 +108,8 @@ public final class LFDMS_GUI extends javax.swing.JFrame implements LFDMS_Constan
         /*
             Get configuration details from the configuration file (JSON).
         
-            Only main-gui because there's only one configuration file.
+            Only main-gui calls this method because there's only one 
+            configuration file.
         */
         LFDMS_OpenConfiguration.openConfiguration ();
         
@@ -390,13 +391,9 @@ public final class LFDMS_GUI extends javax.swing.JFrame implements LFDMS_Constan
         if ( CAMERAS_DETAILS_HM.containsKey (getCameraNumber ().toString ())
              && CAMERAS_DETAILS_HM.get (getCameraNumber ().toString ()).getProperty ("enabled").equals ("yes") ) {
 
-            if (!CAMERAS_DETAILS_HM.get (CAMERA_NUMBER.toString ()).getProperty ("start_recording_at_startup").equals ("yes")) {
+            if (CAMERAS_DETAILS_HM.get (CAMERA_NUMBER.toString ()).getProperty ("start_recording_at_startup").equals ("yes")) {
                 
-                recordToggleButton.setSelected (Boolean.FALSE);
-            
-                recordToggleButton.setIcon (new javax.swing.ImageIcon (getClass ().getResource ("/res/media-record.png")));
-
-                if (!statusBarLabel.getText ().equals (" not recording")) statusBarLabel.setText (" not recording");
+                getRecordToggleButton ().doClick ();
             }
             
             if (CAMERAS_DETAILS_HM.get (getCameraNumber ().toString ()).getProperty ("iconify_at_start").equals ("yes")) {
@@ -409,12 +406,15 @@ public final class LFDMS_GUI extends javax.swing.JFrame implements LFDMS_Constan
                 this.setState (JFrame.ICONIFIED);
                 
                 TIMERS.getHideTimer ().schedule (TIMERS.GET_NEW_HIDE_TIMERTASK (), 1000);
-            }
+            } 
             
             if (CAMERAS_DETAILS_HM.get (getCameraNumber ().toString ()).getProperty ("mute_playback_by_default").equals ("yes")) {
                 
-                BIG_SCREEN.getMuteAudioMenuItem ().doClick ();
-                
+                /*
+                    [TODO]
+                        Need an audio mute mechanism.
+                    [/]
+                */
                 setTitle (getTitle () + " :: muted");
             }
             
@@ -843,8 +843,6 @@ public final class LFDMS_GUI extends javax.swing.JFrame implements LFDMS_Constan
         if (playToggleButton.isSelected ()) {
             
             playToggleButton.doClick ();
-            
-            
         }
         
         if ( STATUS.getSliderHasBeenMoved () ) {
@@ -914,6 +912,11 @@ public final class LFDMS_GUI extends javax.swing.JFrame implements LFDMS_Constan
     }//GEN-LAST:event_recordToggleButtonActionPerformed
 
     private void stopGuiPlayback () {
+        
+        if ( !STATUS.getSliderHasBeenMoved () ) {
+
+            STATUS.setSliderHasBeenMoved ( Boolean.TRUE );
+        }
         
         if (!getStepBackButton ().isEnabled ()) {
             
@@ -1077,12 +1080,17 @@ public final class LFDMS_GUI extends javax.swing.JFrame implements LFDMS_Constan
      */
     private void stepBackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stepBackButtonActionPerformed
 
+        if ( !STATUS.getSliderHasBeenMoved () ) {
+
+            STATUS.setSliderHasBeenMoved ( Boolean.TRUE );
+        }
+        
         showBigScreen ();
         
-        if (! this.getPlayToggleButton ().isSelected ()
-            && playbackSlider.getValue () > 1) {
+        if (! this.getPlayToggleButton ().isSelected ()) {
+//            && playbackSlider.getValue () >= 1) {
             
-            playbackSlider.setValue (playbackSlider.getValue () - 1);
+            playbackSlider.setValue (( playbackSlider.getValue () > 1 ) ? playbackSlider.getValue () - 1 : 1);
             
             TIMERS.displaySinglePlaybackImage ();
         }
@@ -1095,6 +1103,11 @@ public final class LFDMS_GUI extends javax.swing.JFrame implements LFDMS_Constan
      * [/] 
      */
     private void stepForwardButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stepForwardButtonActionPerformed
+        
+        if ( !STATUS.getSliderHasBeenMoved () ) {
+
+            STATUS.setSliderHasBeenMoved ( Boolean.TRUE );
+        }
         
         showBigScreen ();
         

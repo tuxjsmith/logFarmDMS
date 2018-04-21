@@ -26,6 +26,8 @@
 
 package utilities;
 
+import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
@@ -36,6 +38,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
@@ -222,11 +226,8 @@ public class LFDMS_Timers {
         public void run () {
 
             // <editor-fold defaultstate="collapsed" desc="Record toggle button is selected."> 
-            if ( !TIMERS_GUI.getStatus ().getSliderHasBeenMoved () ) {
-                
-                final LiveFeed LIVE_FEED = new LiveFeed ( CAMERA_BI );
-                LIVE_FEED.run ();
-            }
+            final LiveFeed LIVE_FEED = new LiveFeed ( CAMERA_BI );
+            LIVE_FEED.run ();
             //</editor->
 
             // <editor-fold defaultstate="collapsed" desc="Record toggle button is selected.">  
@@ -234,25 +235,50 @@ public class LFDMS_Timers {
 
                 // <editor-fold defaultstate="collapsed" desc="Recording, spinning ascii status text.">  
                 statusRecordTickCounter++;
-                if ( statusRecordTickCounter <= 2 ) {
-                    TIMERS_GUI.getStatusBarLabel ().setText ( " recording \\" );
-                }
-                else if ( statusRecordTickCounter > 2 && statusRecordTickCounter <= 4 ) {
-                    TIMERS_GUI.getStatusBarLabel ().setText ( " recording |" );
-                }
-                else if ( statusRecordTickCounter > 4 && statusRecordTickCounter <= 6 ) {
-                    TIMERS_GUI.getStatusBarLabel ().setText ( " recording /" );
-                }
-                else if ( statusRecordTickCounter > 6 && statusRecordTickCounter < 8 ) {
-                    TIMERS_GUI.getStatusBarLabel ().setText ( " recording --" );
-                }
-                else {
-                    statusRecordTickCounter = 0;
-                }
+                if ( statusRecordTickCounter == 1 ) TIMERS_GUI.getStatusBarLabel ().setText ( " recording \\" );
+                else if ( statusRecordTickCounter == 2 ) TIMERS_GUI.getStatusBarLabel ().setText ( " recording |" );
+                else if ( statusRecordTickCounter == 3 ) TIMERS_GUI.getStatusBarLabel ().setText ( " recording /" );
+                else if ( statusRecordTickCounter == 4 ) TIMERS_GUI.getStatusBarLabel ().setText ( " recording --" );
+                else if ( statusRecordTickCounter == 5 ) TIMERS_GUI.getStatusBarLabel ().setText ( " recording \\" );
+                else if ( statusRecordTickCounter == 6 ) TIMERS_GUI.getStatusBarLabel ().setText ( " recording |" );
+                else if ( statusRecordTickCounter == 7 ) TIMERS_GUI.getStatusBarLabel ().setText ( " recording /" );
+                else if ( statusRecordTickCounter == 8 ) TIMERS_GUI.getStatusBarLabel ().setText ( " recording --" );
+                else if ( statusRecordTickCounter == 9 ) TIMERS_GUI.getStatusBarLabel ().setText ( " recording \\" );
+                else statusRecordTickCounter = 0;
+                
                 //</editor-fold>
 
                 if ( TIMERS_GUI.getVideoAudioRadioButton ().isSelected () ) {
+                    
+                    final RecordImages RECORD_IMAGES = new RecordImages ( CAMERA_BI );
+                    RECORD_IMAGES.run ();
+                }
+                else {
+                    
+                     /*
+                        we create a separate Graphics object otherwise the font
+                        setting is lost
+                    */
+                    Graphics g = CAMERA_BI.getGraphics ();
 
+                    g.clearRect (0, 0, 
+                                 CAMERA_BI.getWidth (),
+                                 CAMERA_BI.getHeight ());
+
+                    g.setFont (new Font (Font.SANS_SERIF, Font.PLAIN, 84));
+
+                    g.drawString ("audio only", 100, 240);
+
+                    g.setFont (new Font (Font.SANS_SERIF, Font.PLAIN, 52));
+                    GregorianCalendar calendar = new GregorianCalendar ();
+                    g.drawString (calendar.get (Calendar.YEAR) + "-" 
+                                                + ((calendar.get (Calendar.MONTH) + 1 < 10) ? "0" + (calendar.get (Calendar.MONTH) + 1) : (calendar.get (Calendar.MONTH) + 1)) + "-"
+                                                + ((calendar.get (Calendar.DATE) < 10) ? "0" + calendar.get (Calendar.DATE) : calendar.get (Calendar.DATE)) + " "
+                                                + ((calendar.get (Calendar.HOUR_OF_DAY) < 10) ? "0" + calendar.get (Calendar.HOUR_OF_DAY) : calendar.get (Calendar.HOUR_OF_DAY)) + ":" 
+                                                + ((calendar.get (Calendar.MINUTE) < 10) ? "0" + calendar.get (Calendar.MINUTE) : calendar.get (Calendar.MINUTE)) + ":"
+                                                + ((calendar.get (Calendar.SECOND) < 10) ? "0" + calendar.get (Calendar.SECOND) : calendar.get (Calendar.SECOND)),
+                                                  30, 450);
+                    
                     final RecordImages RECORD_IMAGES = new RecordImages ( CAMERA_BI );
                     RECORD_IMAGES.run ();
                 }
@@ -306,8 +332,8 @@ public class LFDMS_Timers {
 
                 final Statement STATEMENT = TIMERS_GUI.getDbStuff ().getCameraDatabaseConnection ().createStatement ();
 
-                final String SQL = "select fileBytes, date from fileData where rowid = " + TIMERS_GUI.getPlaybackSlider ().getValue ();
-
+                final String SQL = "select fileBytes, date from fileData where rowid = " + ((TIMERS_GUI.getPlaybackSlider ().getValue () == 0) ? 1 : TIMERS_GUI.getPlaybackSlider ().getValue ());
+                
                 final ResultSet RESULTSET;
 
                 RESULTSET = STATEMENT.executeQuery ( SQL );
@@ -447,15 +473,17 @@ public class LFDMS_Timers {
             /*
                 Display the camera image on the big screen.
              */
-            if ( TIMERS_GUI.getBigScreen ().isVisible ()
-                    && TIMERS_GUI.getBigScreen ().getState () != JFrame.ICONIFIED
-                    && !TIMERS_GUI.getPlayToggleButton ().isSelected ()
-                    && CAPTURE_BI != null ) {
+            if ( !TIMERS_GUI.getStatus ().getSliderHasBeenMoved () ) {
+                
+                if ( TIMERS_GUI.getBigScreen ().isVisible ()
+                        && TIMERS_GUI.getBigScreen ().getState () != JFrame.ICONIFIED
+                        && !TIMERS_GUI.getPlayToggleButton ().isSelected ()
+                        && CAPTURE_BI != null ) {
 
-                TIMERS_GUI.getBigScreen ().setBufferedImage ( CAPTURE_BI );
+                    TIMERS_GUI.getBigScreen ().setBufferedImage ( CAPTURE_BI );
+                }
             }
         }
-
     }
 
     /**
@@ -497,7 +525,7 @@ public class LFDMS_Timers {
 
         @Override
         public void run () {
-
+            
             if ( LFDMS_Status.getAudioPlaybackOwner () != null ) {
 
                 try {
