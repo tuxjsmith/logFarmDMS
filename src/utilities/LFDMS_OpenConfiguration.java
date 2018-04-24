@@ -54,12 +54,12 @@ public class LFDMS_OpenConfiguration {
      */
     public static void openConfiguration () {
 
-        if (!new File ("configuration.json").exists ()) {
+        if ( !new File ( System.getProperty ("user.dir") + System.getProperty ("file.separator") + "configuration.json" ).exists () ) {
             
             writeDefaultConfiguration ();
         }
         
-        try (BufferedReader br = new BufferedReader (new FileReader ("configuration.json"))) {
+        try (BufferedReader br = new BufferedReader ( new FileReader ( System.getProperty ("user.dir") + System.getProperty ("file.separator") + "configuration.json" ))) {
 
             String line_s, jsonLine_s = "";
 
@@ -159,7 +159,7 @@ public class LFDMS_OpenConfiguration {
 
         final Integer NUMBER_OF_CAMERAS = 2;
 
-        try (FileWriter writer = new FileWriter ("configuration.json")) {
+        try (FileWriter writer = new FileWriter ( System.getProperty ("user.dir") + System.getProperty ("file.separator") + "configuration.json" )) {
 
             JSONWriter jsonWriter = new JSONWriter (writer);
             
