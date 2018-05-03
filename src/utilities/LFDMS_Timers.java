@@ -30,6 +30,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.awt.image.Raster;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -226,7 +227,7 @@ public class LFDMS_Timers {
         public void run () {
 
             // <editor-fold defaultstate="collapsed" desc="Record toggle button is selected."> 
-            final LiveFeed LIVE_FEED = new LiveFeed ( CAMERA_BI );
+            final LiveFeed LIVE_FEED = new LiveFeed ( );
             LIVE_FEED.run ();
             //</editor->
 
@@ -250,7 +251,7 @@ public class LFDMS_Timers {
 
                 if ( TIMERS_GUI.getVideoAudioRadioButton ().isSelected () ) {
                     
-                    final RecordImages RECORD_IMAGES = new RecordImages ( CAMERA_BI );
+                    final RecordImages RECORD_IMAGES = new RecordImages (CAMERA_BI.getData ());
                     RECORD_IMAGES.run ();
                 }
                 else {
@@ -259,27 +260,31 @@ public class LFDMS_Timers {
                         we create a separate Graphics object otherwise the font
                         setting is lost
                     */
-                    Graphics g = CAMERA_BI.getGraphics ();
+                    final Graphics BI_GRAPHICS = CAMERA_BI.getGraphics ();
 
-                    g.clearRect (0, 0, 
+                    BI_GRAPHICS.clearRect (0, 0, 
                                  CAMERA_BI.getWidth (),
                                  CAMERA_BI.getHeight ());
 
-                    g.setFont (new Font (Font.SANS_SERIF, Font.PLAIN, 84));
+                    final Font FONT_1 = new Font (Font.SANS_SERIF, Font.PLAIN, 84);
+                    
+                    BI_GRAPHICS.setFont ( FONT_1 );
 
-                    g.drawString ("audio only", 100, 240);
+                    BI_GRAPHICS.drawString ("audio only", 100, 240);
 
-                    g.setFont (new Font (Font.SANS_SERIF, Font.PLAIN, 52));
-                    GregorianCalendar calendar = new GregorianCalendar ();
-                    g.drawString (calendar.get (Calendar.YEAR) + "-" 
-                                                + ((calendar.get (Calendar.MONTH) + 1 < 10) ? "0" + (calendar.get (Calendar.MONTH) + 1) : (calendar.get (Calendar.MONTH) + 1)) + "-"
-                                                + ((calendar.get (Calendar.DATE) < 10) ? "0" + calendar.get (Calendar.DATE) : calendar.get (Calendar.DATE)) + " "
-                                                + ((calendar.get (Calendar.HOUR_OF_DAY) < 10) ? "0" + calendar.get (Calendar.HOUR_OF_DAY) : calendar.get (Calendar.HOUR_OF_DAY)) + ":" 
-                                                + ((calendar.get (Calendar.MINUTE) < 10) ? "0" + calendar.get (Calendar.MINUTE) : calendar.get (Calendar.MINUTE)) + ":"
-                                                + ((calendar.get (Calendar.SECOND) < 10) ? "0" + calendar.get (Calendar.SECOND) : calendar.get (Calendar.SECOND)),
+                    final Font FONT_2 = new Font (Font.SANS_SERIF, Font.PLAIN, 52);
+                    
+                    BI_GRAPHICS.setFont ( FONT_2 );
+                    final GregorianCalendar CALENDAR = new GregorianCalendar ();
+                    BI_GRAPHICS.drawString (CALENDAR.get (Calendar.YEAR) + "-" 
+                                                + ((CALENDAR.get (Calendar.MONTH) + 1 < 10) ? "0" + (CALENDAR.get (Calendar.MONTH) + 1) : (CALENDAR.get (Calendar.MONTH) + 1)) + "-"
+                                                + ((CALENDAR.get (Calendar.DATE) < 10) ? "0" + CALENDAR.get (Calendar.DATE) : CALENDAR.get (Calendar.DATE)) + " "
+                                                + ((CALENDAR.get (Calendar.HOUR_OF_DAY) < 10) ? "0" + CALENDAR.get (Calendar.HOUR_OF_DAY) : CALENDAR.get (Calendar.HOUR_OF_DAY)) + ":" 
+                                                + ((CALENDAR.get (Calendar.MINUTE) < 10) ? "0" + CALENDAR.get (Calendar.MINUTE) : CALENDAR.get (Calendar.MINUTE)) + ":"
+                                                + ((CALENDAR.get (Calendar.SECOND) < 10) ? "0" + CALENDAR.get (Calendar.SECOND) : CALENDAR.get (Calendar.SECOND)),
                                                   30, 450);
                     
-                    final RecordImages RECORD_IMAGES = new RecordImages ( CAMERA_BI );
+                    final RecordImages RECORD_IMAGES = new RecordImages (CAMERA_BI.getData ());
                     RECORD_IMAGES.run ();
                 }
             }
@@ -334,9 +339,7 @@ public class LFDMS_Timers {
 
                 final String SQL = "select fileBytes, date from fileData where rowid = " + ((TIMERS_GUI.getPlaybackSlider ().getValue () == 0) ? 1 : TIMERS_GUI.getPlaybackSlider ().getValue ());
                 
-                final ResultSet RESULTSET;
-
-                RESULTSET = STATEMENT.executeQuery ( SQL );
+                final ResultSet RESULTSET = STATEMENT.executeQuery ( SQL );
 
                 byte[] data = null;
 
@@ -349,12 +352,13 @@ public class LFDMS_Timers {
 
                 RESULTSET.close ();
 
-                STATEMENT.closeOnCompletion ();
+//                STATEMENT.closeOnCompletion ();
+                STATEMENT.close ();
 
                 if ( data != null ) {
 
                     try ( final ByteArrayInputStream BA_IS = new ByteArrayInputStream ( data );
-                            final BufferedInputStream BIN = new BufferedInputStream ( BA_IS ) ) {
+                          final BufferedInputStream BIN = new BufferedInputStream ( BA_IS ) ) {
 
                         PLAYBACK_BI.getGraphics ().drawImage ( ImageIO.read ( BIN ),
                                 0, 0,
@@ -382,19 +386,20 @@ public class LFDMS_Timers {
                 System.err.println ( "LFDMS_Timers.CaptureTimerTask " + sqle.getMessage () );
             }
         }
-
     }
 
     /**
      * [TODO] Document. Unit test. [/]
      */
     private class RecordImages {
+        
+        BufferedImage bi;
 
-        private final BufferedImage RECORD_BI;
-
-        public RecordImages ( BufferedImage bi ) {
-
-            RECORD_BI = bi;
+        public RecordImages (Raster r) {
+            
+            bi = new BufferedImage ( CAMERA_BI.getWidth (), CAMERA_BI.getHeight (), 8 );
+            
+            bi.setData ( r );
         }
 
         public void run () {
@@ -413,30 +418,34 @@ public class LFDMS_Timers {
 
                 final String SQL_COMMAND = "insert into fileData (fileBytes, date) values(?,(select (STRFTIME('%Y-%m-%d %H:%M:%f', 'NOW', 'localtime'))))";
                 final PreparedStatement PSTMT = TIMERS_GUI.getDbStuff ().getCameraDatabaseConnection ().prepareStatement ( SQL_COMMAND );
-
+                
                 /*
                     [WARNING] 
                         If this is set to jpg then OpenJDK will crash
                     [/]
                  */
-                ImageIO.write ( RECORD_BI,
-                        "jpg",
-                        BYTE_ARRAY_OUTPUT_STREAM );
-
+                ImageIO.write ( bi,
+                                "jpg",
+                                BYTE_ARRAY_OUTPUT_STREAM );
+     
                 PSTMT.setBytes ( 1, BYTE_ARRAY_OUTPUT_STREAM.toByteArray () );
 
+                BYTE_ARRAY_OUTPUT_STREAM.flush ();
+                
+                BYTE_ARRAY_OUTPUT_STREAM.reset ();
+                
                 PSTMT.executeUpdate ();
 
-                PSTMT.closeOnCompletion ();
-
-                BYTE_ARRAY_OUTPUT_STREAM.flush ();
+//                PSTMT.closeOnCompletion ();
+                PSTMT.close ();
             }
             catch ( IOException | SQLException ex ) {
 
                 System.err.println ( "LFDMS_Timers.RecordImages " + ex.getMessage () );
             }
+            
+            bi = null;
         }
-
     }
 
     /**
@@ -444,30 +453,28 @@ public class LFDMS_Timers {
      */
     private class LiveFeed {
 
-        private final BufferedImage CAPTURE_BI;
-
-        LiveFeed ( BufferedImage captureBi ) {
-
-            CAPTURE_BI = captureBi;
+        public LiveFeed () {            
         }
 
         public void run () {
 
-            CAPTURE_BI.getGraphics ().drawImage ( cvQueryFrame ( ( opencv_highgui.CvCapture ) CAMERAS_HM.get ( TIMERS_GUI.getCameraNumber () ) ).getBufferedImage (),
+            CAMERA_BI.getGraphics ().drawImage ( cvQueryFrame ( ( opencv_highgui.CvCapture ) CAMERAS_HM.get ( TIMERS_GUI.getCameraNumber () ) ).getBufferedImage (),
                     0, 0,
-                    CAPTURE_BI.getWidth (),
-                    CAPTURE_BI.getHeight (),
+                    CAMERA_BI.getWidth (),
+                    CAMERA_BI.getHeight (),
                     null );
 
             /*
                 Display the camera image on the live-feed label.
              */
             if ( TIMERS_GUI.getState () != JFrame.ICONIFIED
-                    && CAPTURE_BI != null ) {
+                 && CAMERA_BI != null ) {
 
-                TIMERS_GUI.getLiveImageLabel ().setIcon ( new ImageIcon ( CAPTURE_BI.getScaledInstance ( TIMERS_GUI.getLiveImageLabel ().getWidth (),
-                        TIMERS_GUI.getLiveImageLabel ().getHeight (),
-                        Image.SCALE_DEFAULT ) ) );
+                final ImageIcon II = new ImageIcon ( CAMERA_BI.getScaledInstance ( TIMERS_GUI.getLiveImageLabel ().getWidth (),
+                                                     TIMERS_GUI.getLiveImageLabel ().getHeight (),
+                                                     Image.SCALE_DEFAULT ) );
+                
+                TIMERS_GUI.getLiveImageLabel ().setIcon ( II );
             }
 
             /*
@@ -476,11 +483,11 @@ public class LFDMS_Timers {
             if ( !TIMERS_GUI.getStatus ().getSliderHasBeenMoved () ) {
                 
                 if ( TIMERS_GUI.getBigScreen ().isVisible ()
-                        && TIMERS_GUI.getBigScreen ().getState () != JFrame.ICONIFIED
-                        && !TIMERS_GUI.getPlayToggleButton ().isSelected ()
-                        && CAPTURE_BI != null ) {
+                     && TIMERS_GUI.getBigScreen ().getState () != JFrame.ICONIFIED
+                     && !TIMERS_GUI.getPlayToggleButton ().isSelected ()
+                     && CAMERA_BI != null ) {
 
-                    TIMERS_GUI.getBigScreen ().setBufferedImage ( CAPTURE_BI );
+                    TIMERS_GUI.getBigScreen ().setBufferedImage ( CAMERA_BI );
                 }
             }
         }
@@ -497,7 +504,7 @@ public class LFDMS_Timers {
         
             BUFFERS_HM: A collection of Buffers.
         */
-        private static ConcurrentHashMap<Integer, ConcurrentHashMap<Integer, ByteArrayOutputStream>> BUFFERS_HM = new ConcurrentHashMap ();
+        private static ConcurrentHashMap<Integer, ConcurrentHashMap<Integer, ByteArrayOutputStream>> buffers_hm = new ConcurrentHashMap ();
 
         private static Integer currentBuffer_i = 0,
                                whichBufferToPlay_i = -1;
@@ -509,7 +516,9 @@ public class LFDMS_Timers {
          */
         public static void clearBuffers () {
             
-            BUFFERS_HM = new ConcurrentHashMap ();
+            buffers_hm.clear ();
+            
+            buffers_hm = new ConcurrentHashMap ();
         }
         
         /*
@@ -519,7 +528,7 @@ public class LFDMS_Timers {
             
             for (int i = 0; i < MAX_BUFFERS_I; i++) { 
             
-                BUFFERS_HM.put ( i, new ConcurrentHashMap<> () );
+                buffers_hm.put ( i, new ConcurrentHashMap<> () );
             }
         }
 
@@ -544,78 +553,80 @@ public class LFDMS_Timers {
 
                     AUDIO_RESULTSET = AUDIO_STATEMENT.executeQuery ( SQL );
 
-                    final ByteArrayOutputStream DATA_BYTE_ARRAY_OUTPUTSTREAM = new ByteArrayOutputStream ( 1024 );
-
-                    /*
-                        closed when there aren't any more audio frames
-                        this seems to happen when playback catches up with
-                        audio recording
-                     */
-                    while ( AUDIO_RESULTSET.next () ) {
+                    try ( final ByteArrayOutputStream DATA_BYTE_ARRAY_OUTPUTSTREAM = new ByteArrayOutputStream ( 1024 ) ) {
 
                         /*
-                            Push audio bytes into an outputStream.
+                            closed when there aren't any more audio frames
+                            this seems to happen when playback catches up with
+                            audio recording
                          */
-                        DATA_BYTE_ARRAY_OUTPUTSTREAM.write ( AUDIO_RESULTSET.getBytes ( 1 ) );
-                    }
-                    
-                    /*
-                        currentBuffer_i is the key of the buffer we are filling.
-                        If it not filled (MAX_NUMBER_OF_OS_I) then add another 
-                        outputStream.
-                    */
-                    if ( BUFFERS_HM.get ( currentBuffer_i ).size () < MAX_NUMBER_OF_OS_I ) {
-
-                        /*
-                            if MAX_NUMBER_OF_OS_I = 3 then
-                            BUFFERS_HM.get ( currentBuffer_i ).size () will be: 0, 1, 2
-                            which is why we use it as key value below; 
-                            the outputstream keys get incremented.
-                        */
-                        BUFFERS_HM.get ( currentBuffer_i ).put ( BUFFERS_HM.get ( currentBuffer_i ).size (), 
-                                                                 DATA_BYTE_ARRAY_OUTPUTSTREAM );
-
-                        /*
-                            how many output streams does the current buffer have ?
-                            Is it more than the allowed maximum ?
-                        */
-                        if ( BUFFERS_HM.get ( currentBuffer_i ).size () >= MAX_NUMBER_OF_OS_I ) {
+                        while ( AUDIO_RESULTSET.next () ) {
 
                             /*
-                                The current buffer is full so we need to increment
-                                the buffer counter so we start populating the 
-                                next buffer.
-                            
-                                This is also the buffer we send to the audio
-                                player.
-                            
-                                The buffer is emptied by LFDMS_PlayAudioOutputStream.
-                            */
-                            whichBufferToPlay_i = currentBuffer_i;
-                            
-                            if ( currentBuffer_i < MAX_BUFFERS_I -1 ) {
+                            Push audio bytes into an outputStream.
+                             */
+                            DATA_BYTE_ARRAY_OUTPUTSTREAM.write ( AUDIO_RESULTSET.getBytes ( 1 ) );
+                        }
 
-                                currentBuffer_i++;
-                            }
-                            else {
+                        /*
+                            currentBuffer_i is the key of the buffer we are filling.
+                            If it not filled (MAX_NUMBER_OF_OS_I) then add another 
+                            outputStream.
+                         */
+                        if ( buffers_hm.get ( currentBuffer_i ).size () < MAX_NUMBER_OF_OS_I ) {
 
-                                currentBuffer_i = 0;
-                            }
+                            /*
+                                if MAX_NUMBER_OF_OS_I = 3 then
+                                BUFFERS_HM.get ( currentBuffer_i ).size () will be: 0, 1, 2
+                                which is why we use it as key value below; 
+                                the outputstream keys get incremented.
+                             */
+                            buffers_hm.get ( currentBuffer_i ).put ( buffers_hm.get ( currentBuffer_i ).size (),
+                                    DATA_BYTE_ARRAY_OUTPUTSTREAM );
 
-                            if ( whichBufferToPlay_i > -1 // -1, the initial/ignore value
-                                 && !BUFFERS_HM.get ( whichBufferToPlay_i ).isEmpty () ) {
+                            /*
+                                how many output streams does the current buffer have ?
+                                Is it more than the allowed maximum ?
+                             */
+                            if ( buffers_hm.get ( currentBuffer_i ).size () >= MAX_NUMBER_OF_OS_I ) {
 
-                                final LFDMS_PlayAudioOutputStream PLAY_AUDIO = new LFDMS_PlayAudioOutputStream ( LFDMS_AudioInit.getAudioFormat (),
-                                                                                                                 BUFFERS_HM.get ( whichBufferToPlay_i ) );
+                                /*
+                                    The current buffer is full so we need to increment
+                                    the buffer counter so we start populating the 
+                                    next buffer.
 
-                                PLAY_AUDIO.start ();
+                                    This is also the buffer we send to the audio
+                                    player.
+
+                                    The buffer is emptied by LFDMS_PlayAudioOutputStream.
+                                 */
+                                whichBufferToPlay_i = currentBuffer_i;
+
+                                if ( currentBuffer_i < MAX_BUFFERS_I - 1 ) {
+
+                                    currentBuffer_i++;
+                                }
+                                else {
+
+                                    currentBuffer_i = 0;
+                                }
+
+                                if ( whichBufferToPlay_i > -1 // -1, the initial/ignore value
+                                        && !buffers_hm.get ( whichBufferToPlay_i ).isEmpty () ) {
+
+                                    final LFDMS_PlayAudioOutputStream PLAY_AUDIO = new LFDMS_PlayAudioOutputStream ( LFDMS_AudioInit.getAudioFormat (),
+                                            buffers_hm.get ( whichBufferToPlay_i ) );
+
+                                    PLAY_AUDIO.start ();
+                                }
                             }
                         }
                     }
 
                     AUDIO_RESULTSET.close ();
 
-                    AUDIO_STATEMENT.closeOnCompletion ();
+//                    AUDIO_STATEMENT.closeOnCompletion ();
+                    AUDIO_STATEMENT.close ();
                     
                 }
                 catch ( IOException | SQLException | NullPointerException ex ) { // IOException | LineUnavailableException ex) {
@@ -640,53 +651,47 @@ public class LFDMS_Timers {
      * [TODO] Documentation. [/]
      */
     public static class CaptureAudioTimerTask extends TimerTask {
+        
+        static byte buffer[] = new byte[ 1024 ];
 
         @Override
         public void run () {
 
             final Long NOW = System.currentTimeMillis () + AUDIO_DURATION_I;
 
-            final byte BUFFER[] = new byte[ 1024 ];
-
             try ( final ByteArrayOutputStream AUDIO_BA_OS = new ByteArrayOutputStream () ) {
 
                 while ( System.currentTimeMillis () < NOW ) {
 
-                    int count = LFDMS_AudioInit.getLine ().read ( BUFFER, 0, BUFFER.length );
+                    int count = LFDMS_AudioInit.getLine ().read ( buffer, 0, buffer.length );
 
                     if ( count > 0 ) {
 
-                        AUDIO_BA_OS.write ( BUFFER, 0, count );
+                        AUDIO_BA_OS.write ( buffer, 0, count );
                     }
                 }
-
-                LFDMS_AudioInit.getLine ().flush ();
-
-                byte[] bytesOut = AUDIO_BA_OS.toByteArray ();
-
-                AUDIO_BA_OS.flush ();
 
                 final String SQL_COMMAND = "insert into fileData (fileBytes, date) values(?,(select (STRFTIME('%Y-%m-%d %H:%M:%f', 'NOW', 'localtime'))))";
 
                 final PreparedStatement PSTMT = LFDMS_DbInit.getAudioDatabaseConnection ().prepareStatement ( SQL_COMMAND );
 
-                PSTMT.setBytes ( 1, bytesOut );
+                PSTMT.setBytes ( 1, AUDIO_BA_OS.toByteArray ());
 
+                AUDIO_BA_OS.flush ();
+                
+                AUDIO_BA_OS.reset ();
+                
                 PSTMT.executeUpdate ();
 
-                PSTMT.closeOnCompletion ();
-
-                /*
-                    for garbage collection
-                */
-                bytesOut = null;
+//                PSTMT.closeOnCompletion ();
+                PSTMT.close ();
             }
             catch ( IOException | SQLException | NullPointerException ex ) {
+//            catch ( IOException | NullPointerException ex ) {
 
                 System.err.println ( "LFDMS_Timers.recordAudioForAfewSeconds " + ex.getMessage () );
             }
         }
-
     }
 
     /**
@@ -699,6 +704,5 @@ public class LFDMS_Timers {
 
             TIMERS_GUI.setVisible ( Boolean.FALSE );
         }
-
     }
 }

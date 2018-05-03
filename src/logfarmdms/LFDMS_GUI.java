@@ -1510,48 +1510,49 @@ public final class LFDMS_GUI extends javax.swing.JFrame implements LFDMS_Constan
                 }
                 
                 /*
-                    We reuse sql, statement and resultSet so we don't make them final.
+                    We reuse sql.
                  */
                 String sql = "select rowid from fileData order by rowid desc limit 1";
 
-                Statement statement;
-                statement = getDbStuff ().getCameraDatabaseConnection ().createStatement ();
+                final Statement STATEMENT_1 = getDbStuff ().getCameraDatabaseConnection ().createStatement ();
 
-                ResultSet resultSet;
-                resultSet = statement.executeQuery ( sql );
+                final ResultSet RESULTSET_1 = STATEMENT_1.executeQuery ( sql );
 
                 Integer rowCount = 0;
 
-                while ( resultSet.next () ) {
+                while ( RESULTSET_1.next () ) {
 
-                    rowCount = resultSet.getInt ( 1 );
+                    rowCount = RESULTSET_1.getInt ( 1 );
                 }
 
-                resultSet.close ();
+                RESULTSET_1.close ();
 
-                statement.closeOnCompletion ();
+                STATEMENT_1.closeOnCompletion ();
 
                 //
+                
                 sql = "select rowid from fileData order by rowid asc limit 1";
 
-                statement = getDbStuff ().getCameraDatabaseConnection ().createStatement ();
+                final Statement STATEMENT_2 = getDbStuff ().getCameraDatabaseConnection ().createStatement ();
 
-                resultSet = statement.executeQuery ( sql );
+                final ResultSet RESULTSET_2 = STATEMENT_2.executeQuery ( sql );
 
                 Integer minimum = 1;
 
-                while ( resultSet.next () ) {
+                while ( RESULTSET_2.next () ) {
 
-                    minimum = resultSet.getInt ( 1 );
+                    minimum = RESULTSET_2.getInt ( 1 );
                 }
 
-                resultSet.close ();
+                RESULTSET_2.close ();
 
-                statement.closeOnCompletion ();
+                STATEMENT_2.closeOnCompletion ();
 
                 //
                 playbackSlider.setMinimum ( minimum );
                 playbackSlider.setMaximum ( rowCount );
+                
+                sql = null;
             }
             catch ( SQLException | NullPointerException ex ) {
 

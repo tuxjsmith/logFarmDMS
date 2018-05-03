@@ -17,24 +17,14 @@ HIGHGUI ERROR: V4L: index 1 is not correct!
 
 Then configuation.json has assumed two cameras are connected to your computer.
 <pre>
-"cameras": [{
-	    "number": "0",
-	    :
-    }, {
-            "number": "1",
-	    :
-    }]
+"number_of_cameras": "2"
 </pre>
 
-The error is not critical and the application will run normally. If the second camera configuration details are deleted:
+The error is not critical and the application will run normally. Setting number_of_cameras 
+to 1 will stop this error message. 
 <pre>
-{
-    "number": "1",
-    :
-}
+"number_of_cameras": "1"
 </pre>
-
-An error message will not be generated.
 
 <br>
 <b>CONTACT</b>

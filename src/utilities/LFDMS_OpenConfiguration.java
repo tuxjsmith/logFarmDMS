@@ -132,7 +132,7 @@ public class LFDMS_OpenConfiguration {
                                                           (cameraObject.has ("iconify_at_start")) ? cameraObject.getString ("iconify_at_start") : "no",
                                                           (cameraObject.has ("hide")) ? cameraObject.getString ("hide") : "no",
                                                           (cameraObject.has ("start_recording_at_startup")) ? cameraObject.getString ("start_recording_at_startup") : "yes",
-                                                          (cameraObject.has ("record_video_and_audio_by_default")) ? cameraObject.getString ("record_video_and_audio_by_default") : "yes",
+//                                                          (cameraObject.has ("record_video_and_audio_by_default")) ? cameraObject.getString ("record_video_and_audio_by_default") : "yes",
                                                           (cameraObject.has ("record_audio_only_by_default")) ? cameraObject.getString ("record_audio_only_by_default") : "no",
                                                           (cameraObject.has ("mute_playback_by_default")) ? cameraObject.getString ("mute_playback_by_default") : "no",
                                                           (cameraObject.has ("screen_location")) ? cameraObject.getString ("screen_location") : "0,0");
@@ -188,7 +188,7 @@ public class LFDMS_OpenConfiguration {
                                 .key ("iconify_at_start").value ("no")
                                 .key ("hide").value ("no")
                                 .key ("start_recording_at_startup").value ("yes")
-                                .key ("record_video_and_audio_by_default").value ("yes")
+//                                .key ("record_video_and_audio_by_default").value ("yes")
                                 .key ("record_audio_only_by_default").value ("no")
                                 .key ("mute_playback_by_default").value ("no")
                                 .key ("screen_location").value (Integer.toString (i*75) + "," + Integer.toString (i*60));

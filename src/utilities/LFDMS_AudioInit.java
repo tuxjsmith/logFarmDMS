@@ -82,7 +82,7 @@ public class LFDMS_AudioInit {
         }
         catch (IllegalArgumentException | LineUnavailableException  | NullPointerException ex) {
          
-            System.err.println ("GUI " + ex.getMessage ());
+            System.err.println ("LFDMS_AudioInit.AUDIO_INIT " + ex.getMessage ());
         }
     }
     

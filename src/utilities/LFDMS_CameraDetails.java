@@ -61,7 +61,7 @@ public class LFDMS_CameraDetails {
                           String iconify_at_start,
                           String hide,
                           String start_recording_at_startup,
-                          String record_video_and_audio_by_default,
+//                          String record_video_and_audio_by_default,
                           String record_audio_only_by_default,
                           String mute_playback_by_default,
                           String screen_location) {
@@ -73,7 +73,7 @@ public class LFDMS_CameraDetails {
         PROPERTIES_HM.put ("iconify_at_start", iconify_at_start);
         PROPERTIES_HM.put ("hide", hide);
         PROPERTIES_HM.put ("start_recording_at_startup", start_recording_at_startup);
-        PROPERTIES_HM.put ("record_video_and_audio_by_default", record_video_and_audio_by_default);
+//        PROPERTIES_HM.put ("record_video_and_audio_by_default", record_video_and_audio_by_default);
         PROPERTIES_HM.put ("record_audio_only_by_default", record_audio_only_by_default);
         PROPERTIES_HM.put ("mute_playback_by_default", mute_playback_by_default);
         PROPERTIES_HM.put ("screen_location", screen_location);

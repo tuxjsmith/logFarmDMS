@@ -117,7 +117,7 @@ public class GUITest {
     @Test
     public void testIsNumeric () {
         
-        System.out.println ("isNumeric");
+//        System.out.println ("isNumeric");
         
         String s = "a";
         boolean expResult = false;

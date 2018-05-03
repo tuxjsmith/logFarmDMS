@@ -36,7 +36,7 @@ import logfarmdms.LFDMS_GUI;
  */
 public interface LFDMS_Constants {
 
-    String VERSION_S = "3.02 alpha";
+    String VERSION_S = "3.03 alpha";
     
     Integer AUDIO_DURATION_I = 1000,
             MAX_BUFFERS_I = 3,

@@ -126,7 +126,7 @@ public class LFDMS_BigScreen extends javax.swing.JFrame {
 
         BI.getGraphics ().drawImage (bi,
                                      0, 0,
-                                     640, 480,
+                                     bi.getWidth (), bi.getHeight (),
                                      null);
         
         jLabel1.setIcon (new ImageIcon (bi.getScaledInstance (getWidth (),
