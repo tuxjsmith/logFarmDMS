@@ -23,7 +23,7 @@ Then configuation.json has assumed two cameras are connected to your computer.
 The error is not critical and the application will run normally. Setting number_of_cameras 
 to 1 will stop this error message. 
 <pre>
-"number_of_cameras": "1"
+"number_of_cameras": "1" 
 </pre>
 
 <br>
